@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class TxDanMu {
+public class DanMu {
 
     private Long offset;
     private Long end;
@@ -32,6 +32,8 @@ public class TxDanMu {
                 } catch (Exception ignore) {
                 }
                 return "{\\c&H" + c1 + "&\\t(0," + (endTime) + ",\\c&H" + c2 + "&)}";
+            }else if (this.style.length() == 6){
+                return "{\\c&H" + StringUtils.reverse(this.style) +"}";
             }
         }
         return style;

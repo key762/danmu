@@ -13,6 +13,7 @@ task:
         - https://v.qq.com/x/cover/rjae621myqca41h/i0032qxbi2v.html
         - https://v.qq.com/x/cover/rjae621myqca41h/v0033usud3k.html
       path: C:\Users\zxp21\Videos\弹幕\庆余年 (2019)\Season 1 #保存到本地的路径
+      type: vqq # 弹幕 类型 vqq 腾讯 iqiyi 爱奇艺
     - desc: 庆余年第二季
       enable: false
       immediately: false
@@ -23,8 +24,9 @@ task:
         - https://v.qq.com/x/cover/mzc002002kqssyu/q4100dpkd26.html
         - https://v.qq.com/x/cover/mzc002002kqssyu/v4100ydmxec.html
       path: C:\Users\zxp21\Videos\弹幕\庆余年 (2019)\Season 2
+      type: vqq
     - desc: MacOS庆余年第二季
-      enable: true
+      enable: false
       immediately: true
       cron: 0 30 3 * * ?
       delMark: 腾讯弹幕
@@ -33,3 +35,13 @@ task:
         - https://v.qq.com/x/cover/mzc002002kqssyu/q4100dpkd26.html
         - https://v.qq.com/x/cover/mzc002002kqssyu/v4100ydmxec.html
       path: /Users/anorak/Downloads/TestFileDir/庆余年 (2019)/Season 2
+      type: vqq
+    - desc: 爱奇艺弹幕
+      enable: true
+      immediately: true
+      cron: 0 30 3 * * ?
+      delMark: 爱奇艺弹幕
+      reName: 爱奇艺弹幕($@{FormatDate(${time},yyyy-MM-dd)})
+      path: /Users/anorak/Downloads/TestFileDir/庆余年 (2019)/Season 2
+      type: iqiyi
+      tvId: 9000000005439200

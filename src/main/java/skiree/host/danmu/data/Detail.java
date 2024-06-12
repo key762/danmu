@@ -14,4 +14,6 @@ public class Detail {
     private String reName;
     private List<String> source;
     private String path;
+    public String type;
+    public String tvId;
 }

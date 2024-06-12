@@ -3,12 +3,12 @@ package skiree.host.danmu.data;
 import lombok.Data;
 
 @Data
-public class TxDanMuBar {
+public class DanMuBar {
     public String pos;
     public Boolean mark;
     public double nTime;
 
-    public TxDanMuBar(String pos) {
+    public DanMuBar(String pos) {
         this.pos = pos;
         this.mark = true;
     }

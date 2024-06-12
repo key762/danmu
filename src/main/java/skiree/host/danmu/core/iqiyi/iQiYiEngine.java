@@ -1,14 +1,18 @@
-package skiree.host.danmu.core;
+package skiree.host.danmu.core.iqiyi;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
+import skiree.host.danmu.core.iqiyi.modle.Node;
+import skiree.host.danmu.core.vqq.vQqAssEngine;
 import skiree.host.danmu.data.ASS;
 import skiree.host.danmu.data.Detail;
-import skiree.host.danmu.data.TxDanMu;
+import skiree.host.danmu.data.DanMu;
 import skiree.host.danmu.substitutor.CustomSubstitutor;
 
 import java.io.File;
@@ -17,22 +21,27 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class ProcessEngine {
-
+public class iQiYiEngine {
 
     public static void doProcess(Detail detail) {
         ckAssFile(detail);
         Map<Integer, String> idName = idName(detail.getPath());
-        if (idName.isEmpty()) {return;}
-        Map<Integer, String> idMap = idMap(detail.getSource());
-        Map<Integer, String> jobMap = idMap.entrySet().stream()
+        if (idName.isEmpty()) {
+            return;
+        }
+        Map<Integer, Node> idMap = idMap(detail);
+        Map<Integer, Node> jobMap = idMap.entrySet().stream()
                 .filter(entry -> idName.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         System.out.println("扫描到 " + jobMap.size() + " 个视频,即将开始抓取弹幕。");
+        Node node = new Node();
+        node.setIndex(1);
+        node.setUrl("https://www.iqiyi.com/v_2ffkws0bgr0.html");
+        jobMap.put(1,node);
         jobMap.forEach((k, v) -> {
-            Map<Long, List<TxDanMu>> res = AssEngine.getDanMu(v);
+            Map<Long, List<DanMu>> res = iQiYiAssEngine.getDanMu(v);
             List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS);
-            temp.addAll(AssEngine.calcDanMu(res));
+            temp.addAll(vQqAssEngine.calcDanMu(res));
             HashMap<String, String> objectObjectHashMap = new HashMap<>();
             objectObjectHashMap.put("time", DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             String newName = CustomSubstitutor.getInstance().replace(detail.getReName(), objectObjectHashMap);
@@ -49,47 +58,30 @@ public class ProcessEngine {
         });
     }
 
-    public static Map<Integer, String> idMap(List<String> path) {
-        Map<Integer, String> idMap = new HashMap<>();
-        path.forEach(pathElement -> {
-            IdMapByUrl(pathElement, idMap);
-        });
-        return idMap;
-    }
-
-    public static void IdMapByUrl(String url, Map<Integer, String> idMap) {
-        Map<Integer, String> sortedMap = Collections.emptyMap();
-        try {
-            Map<Integer, String> res = new HashMap<>();
-            Document doc = Jsoup.connect(url)
-                    .header("pragma", "no-cache")
-                    .header("Accept", "*/*")
-                    .header("Host", "v.qq.com")
-                    .header("Accept-Encoding", "gzip, deflate, br")
-                    .timeout(10000)
-                    .get();
-            Elements allElements = doc.getElementsByClass("playlist-rect__container");
-            Elements elements = allElements.get(0).getElementsByAttribute("data-vid");
-            for (Element element : elements) {
-                String key = element.attributes().get("data-vid");
-                if (!element.getElementsByClass("playlist-item-rect__title").get(0).text().equals("彩蛋")) {
-                    Integer index = Integer.valueOf(element.getElementsByClass("playlist-item-rect__title").get(0).text());
-                    Elements ts = element.getElementsByClass("b-imgtag2 b-imgtag2--right-top b-imgtag2--small");
-                    if (!ts.isEmpty()) {
-                        String mark = ts.get(0).text();
-                        if (!mark.equals("预")) {
-                            res.put(index, key);
-                        }
-                    } else {
-                        res.put(index, key);
-                    }
+    public static Map<Integer, Node> idMap(Detail detail) {
+        String videoIds = detail.getTvId();
+        String device_id = "886da22f802790939404d609e17d421e";
+        String app_version = "12.61.16237";
+        String timestamp = String.valueOf(System.currentTimeMillis());
+        String url = "https://mesh.if.iqiyi.com/tvg/v2/lw/base_info";
+        String sign = DigestUtil.md5Hex("ad_param=&app_version=" + app_version + "&auth_cookie=&conduit_id=&device_id=" + device_id + "&entity_id=" + videoIds + "&ext=&os=&src=pca_tvg&timestamp=" + timestamp + "&user_id=0&vip_status=0&vip_type=-1&secret_key=howcuteitis").toUpperCase();
+        String temp = "entity_id=" + videoIds + "&device_id=" + device_id + "&auth_cookie=&user_id=0&vip_type=-1&vip_status=0&conduit_id=&app_version=" + app_version + "&ext=&timestamp=" + timestamp + "&src=pca_tvg&os=&ad_param=&sign=" + sign;
+        String result = HttpUtil.get(url + "?" + temp, CharsetUtil.CHARSET_UTF_8);
+        Map<String, List<Object>> object = (Map<String, List<Object>>) JSONUtil.getByPath(JSONUtil.parse(result), "$.data.template.tabs[0].blocks[2].data.data[0].videos.feature_paged");
+        Map<Integer, Node> idUrl = new HashMap<>();
+        object.forEach((k, v) -> {
+            JSONArray array = JSONUtil.parseArray(v);
+            for (Object o : array) {
+                JSON del = JSONUtil.parse(o);
+                if (del.getByPath("content_type").toString().equals("1")) {
+                    Node node = new Node();
+                    node.setUrl(del.getByPath("page_url").toString());
+                    node.setIndex(Integer.parseInt(del.getByPath("album_order").toString()));
+                    idUrl.put(node.getIndex(), node);
                 }
             }
-            sortedMap = new TreeMap<>(res);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        idMap.putAll(sortedMap);
+        });
+        return idUrl;
     }
 
     public static Map<Integer, String> idName(String path) {

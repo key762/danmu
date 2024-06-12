@@ -4,9 +4,9 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.stereotype.Component;
-import skiree.host.danmu.core.ProcessEngine;
-import skiree.host.danmu.data.ASS;
+import skiree.host.danmu.core.Stratege;
 import skiree.host.danmu.data.Detail;
 import skiree.host.danmu.data.Task;
 
@@ -18,18 +18,19 @@ public class StartListener implements ApplicationRunner {
     @Resource
     private Task task;
 
+    @Resource
+    private PluginRegistry<Stratege, Detail> registry;
+
     private static final SchedulerFactory gSchedulerFactory = new StdSchedulerFactory();
 
     public void run(ApplicationArguments args) throws SchedulerException {
-        for (String publicAss : ASS.PUBLIC_ASS) {
-            System.out.println(publicAss);
-        }
         Scheduler scheduler = gSchedulerFactory.getScheduler();
         if (!task.getDanmu().isEmpty()) {
             for (Detail detail : task.getDanmu()) {
                 if (detail.isEnable()) {
                     if (detail.isImmediately()) {
-                        ProcessEngine.doProcess(detail);
+                        Stratege stratege = registry.getRequiredPluginFor(detail);
+                        stratege.doProcess(detail);
                     }
                     try {
                         JobDataMap jobDataMap = new JobDataMap();
