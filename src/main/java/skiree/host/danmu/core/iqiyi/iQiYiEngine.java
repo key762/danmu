@@ -34,10 +34,10 @@ public class iQiYiEngine {
                 .filter(entry -> idName.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         System.out.println("扫描到 " + jobMap.size() + " 个视频,即将开始抓取弹幕。");
-        Node node = new Node();
-        node.setIndex(1);
-        node.setUrl("https://www.iqiyi.com/v_2ffkws0bgr0.html");
-        jobMap.put(1,node);
+//        Node node = new Node();
+//        node.setIndex(1);
+//        node.setUrl("https://www.iqiyi.com/v_2ffkws0bgr0.html");
+//        jobMap.put(1,node);
         jobMap.forEach((k, v) -> {
             Map<Long, List<DanMu>> res = iQiYiAssEngine.getDanMu(v);
             List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS);
