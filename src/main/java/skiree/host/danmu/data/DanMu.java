@@ -32,31 +32,30 @@ public class DanMu {
                 } catch (Exception ignore) {
                 }
                 return "{\\c&H" + c1 + "&\\t(0," + (endTime) + ",\\c&H" + c2 + "&)}";
-            }else if (this.style.length() == 6){
-                return "{\\c&H" + StringUtils.reverse(this.style) +"}";
+            } else if (this.style.length() == 6) {
+                return "{\\c&H" + StringUtils.reverse(this.style) + "}";
             }
         }
         return style;
     }
 
     public String getDanMuTime() {
-        return getDanMuTime(0L);
+        if (this.offset < 6000L) {
+            return getDanMuTime(0L);
+        }
+        return getDanMuTime(-6000L);
     }
 
     public double gkTime() {
-        return (double) (((this.content.length() * AssConf.size) * 7) / 1000) + 0.1;
+        return (this.content.length() + 3) * 0.5625d;
     }
 
     public String getEndDanMuTime() {
-//            double textLength = this.content.length() * (size * 0.7);
-//            long textTime = (long) ((textLength + 1920.0) * speed);
-        long textTime = (long) ((1920.0 + 1920.0) * AssConf.speed);
-        return getDanMuTime(textTime);
+        return getDanMuTime(24000L);
     }
 
     public String getOutPix() {
-        return "-1920";
-//            return "-" + Math.round((this.content.length() * (size * 0.7)) * 10) / 10.0;
+        return "-960";
     }
 
     public String getDanMuTime(Long end) {

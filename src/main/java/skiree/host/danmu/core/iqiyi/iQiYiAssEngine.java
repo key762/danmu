@@ -62,7 +62,7 @@ public class iQiYiAssEngine {
                 String likeCount = bulletInfoElement.getElementsByTagName("likeCount").item(0).getTextContent();
                 String showTime = bulletInfoElement.getElementsByTagName("showTime").item(0).getTextContent();
                 String color = bulletInfoElement.getElementsByTagName("color").item(0).getTextContent();
-                Long offset = Long.parseLong(likeCount) * 1000;
+                Long offset = Long.parseLong(showTime) * 1000;
                 DanMu danMu = new DanMu();
                 danMu.setOffset(offset);
                 danMu.setContent(content);

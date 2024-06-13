@@ -6,12 +6,13 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.vdurmont.emoji.EmojiParser;
-import skiree.host.danmu.data.AssConf;
 import skiree.host.danmu.data.DanMu;
 import skiree.host.danmu.data.DanMuBar;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 public class vQqAssEngine {
@@ -82,35 +83,45 @@ public class vQqAssEngine {
             }
         }
         Map<Long, List<DanMu>> sortedRes = new TreeMap<>(res);
-        DanMuBar danMuBar1 = new DanMuBar("{\\move(1920,100,END_MARK,100)\\fs" + AssConf.size + "}");
-        DanMuBar danMuBar2 = new DanMuBar("{\\move(1920,200,END_MARK,200)\\fs" + AssConf.size + "}");
-        DanMuBar danMuBar3 = new DanMuBar("{\\move(1920,300,END_MARK,300)\\fs" + AssConf.size + "}");
-        DanMuBar danMuBar4 = new DanMuBar("{\\move(1920,400,END_MARK,400)\\fs" + AssConf.size + "}");
+        DanMuBar[] danMuBars = new DanMuBar[4];
+        for (int i = 0; i < danMuBars.length; i++) {
+            danMuBars[i] = new DanMuBar("{\\move(2880," + (80 + i * 80) + ",END_MARK," + (80 + i * 80) + ",TIME_MARK)\\fs" + size + "}");
+        }
         for (Map.Entry<Long, List<DanMu>> entry : sortedRes.entrySet()) {
+            Lock lock = new ReentrantLock();
             for (DanMu danMu : entry.getValue()) {
-                String strD = "Dialogue: 3," + danMu.getDanMuTime() + "," + danMu.getEndDanMuTime() + ",Default-Box,atg1,0,0,0,,";
-                if (danMuBar1.mark) {
-                    danMuBar1.nTime = danMu.gkTime();
-                    danMuBar1.mark = false;
-                    daMus.add(strD + danMuBar1.pos.replace("END_MARK", danMu.getOutPix()) + danMu.getStyle() + danMu.getContent());
-                } else if (danMuBar2.mark) {
-                    danMuBar2.nTime = danMu.gkTime();
-                    danMuBar2.mark = false;
-                    daMus.add(strD + danMuBar2.pos.replace("END_MARK", danMu.getOutPix()) + danMu.getStyle() + danMu.getContent());
-                } else if (danMuBar3.mark) {
-                    danMuBar3.nTime = danMu.gkTime();
-                    danMuBar3.mark = false;
-                    daMus.add(strD + danMuBar3.pos.replace("END_MARK", danMu.getOutPix()) + danMu.getStyle() + danMu.getContent());
-                } else if (danMuBar4.mark) {
-                    danMuBar4.nTime = danMu.gkTime();
-                    danMuBar4.mark = false;
-                    daMus.add(strD + danMuBar4.pos.replace("END_MARK", danMu.getOutPix()) + danMu.getStyle() + danMu.getContent());
+                if (danMu.getOffset() < 6000L) {
+                    lock.lock();
+                    // 前六秒处理
+                    String strD1 = "Dialogue: 3," + danMu.getDanMuTime() + "," + danMu.getDanMuTime(500L) + ",Default-Box,atg1,0,0,0,,";
+                    String strD2 = "Dialogue: 3," + danMu.getDanMuTime(500L) + "," + danMu.getEndDanMuTime() + ",Default-Box,atg1,0,0,0,,";
+                    for (DanMuBar muBar : danMuBars) {
+                        if (muBar.mark) {
+                            muBar.mark = false;
+                            muBar.nTime = danMu.gkTime();
+                            daMus.add(strD1 + muBar.pos.replace("END_MARK", "1920").replace("TIME_MARK", "0,500") + danMu.getStyle() + danMu.getContent());
+                            daMus.add(strD2 + muBar.pos.replace("2880", "1920").replace("END_MARK", danMu.getOutPix()).replace("TIME_MARK", "0,18000") + danMu.getStyle() + danMu.getContent());
+                            break;
+                        }
+                    }
+                    lock.unlock();
+                } else {
+                    // 六秒后处理
+                    String strD = "Dialogue: 3," + danMu.getDanMuTime() + "," + danMu.getEndDanMuTime() + ",Default-Box,atg1,0,0,0,,";
+                    lock.lock();
+                    String timeMark = "0,24000";
+                    for (DanMuBar muBar : danMuBars) {
+                        if (muBar.mark) {
+                            muBar.mark = false;
+                            muBar.nTime = danMu.gkTime();
+                            daMus.add(strD + muBar.pos.replace("END_MARK", danMu.getOutPix()).replace("TIME_MARK", timeMark) + danMu.getStyle() + danMu.getContent());
+                            break;
+                        }
+                    }
+                    lock.unlock();
                 }
             }
-            danMuBar1.next();
-            danMuBar2.next();
-            danMuBar3.next();
-            danMuBar4.next();
+            Arrays.stream(danMuBars).forEach(DanMuBar::next);
         }
         return daMus;
     }
