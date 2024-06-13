@@ -27,16 +27,23 @@ public class iQiYiAssEngine {
 
     public static Map<Long, List<DanMu>> getDanMu(Node node) {
         Map<Long, List<DanMu>> res = new HashMap<>();
-        String resultInfo = HttpUtil.get(node.getUrl(), CharsetUtil.CHARSET_UTF_8);
-        Matcher matcher1 = Pattern.compile("\"videoDuration\":(\\d+),").matcher(resultInfo);
-        if (matcher1.find()) {
-            int duration = Integer.parseInt(matcher1.group(1));
-            node.setDuration(duration);
-        }
-        Matcher matcher2 = Pattern.compile("window\\.QiyiPlayerProphetData=\\{\"tvid\":(\\d+),").matcher(resultInfo);
-        if (matcher2.find()) {
-            String tvIdStr = matcher2.group(1);
-            node.setId(tvIdStr);
+        while (node.getDuration() == null || node.getId() == null) {
+            try {
+                String resultInfo = HttpUtil.get(node.getUrl(), CharsetUtil.CHARSET_UTF_8);
+                Matcher matcher1 = Pattern.compile("\"videoDuration\":(\\d+),").matcher(resultInfo);
+                if (matcher1.find()) {
+                    int duration = Integer.parseInt(matcher1.group(1));
+                    node.setDuration(duration);
+                }
+                Matcher matcher2 = Pattern.compile("window\\.QiyiPlayerProphetData=\\{\"tvid\":(\\d+),").matcher(resultInfo);
+                if (matcher2.find()) {
+                    String tvIdStr = matcher2.group(1);
+                    node.setId(tvIdStr);
+                }
+            }catch (Exception e){
+                node.setDuration(null);
+                node.setId(null);
+            }
         }
         int i_length = (int) Math.ceil(node.getDuration() / 300);
         for (int i = 1; i < i_length + 1; i++) {
