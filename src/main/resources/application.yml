@@ -41,7 +41,7 @@ task:
       immediately: true
       cron: 0 30 3 * * ?
       delMark: 爱奇艺弹幕
-      reName: 爱奇艺弹幕($@{FormatDate(${time},yyyy-MM-dd)})
-      path: /Users/anorak/Downloads/TestFileDir/庆余年 (2019)/Season 2
+      reName: 爱奇艺弹幕
+      path: C:\Users\zxp21\Videos\弹幕\隐秘的角落 (2020)\Season 1
       type: iqiyi
       tvId: 9000000005439200
