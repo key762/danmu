@@ -32,18 +32,20 @@ public class StartListener implements ApplicationRunner {
                         Stratege stratege = registry.getRequiredPluginFor(detail);
                         stratege.doProcess(detail);
                     }
-                    try {
-                        JobDataMap jobDataMap = new JobDataMap();
-                        jobDataMap.put("job", detail);
-                        JobDetail jobDetail = JobBuilder.newJob(DanMuTask.class)
-                                .withIdentity(detail.getDesc())
-                                .usingJobData(jobDataMap).build();
-                        if (!scheduler.checkExists(jobDetail.getKey())) {
-                            Trigger trigger = TriggerBuilder.newTrigger().withSchedule(CronScheduleBuilder.cronSchedule(detail.getCron()).withMisfireHandlingInstructionDoNothing()).build();
-                            scheduler.scheduleJob(jobDetail, trigger);
+                    if (detail.isTimer()) {
+                        try {
+                            JobDataMap jobDataMap = new JobDataMap();
+                            jobDataMap.put("job", detail);
+                            JobDetail jobDetail = JobBuilder.newJob(DanMuTask.class)
+                                    .withIdentity(detail.getDesc())
+                                    .usingJobData(jobDataMap).build();
+                            if (!scheduler.checkExists(jobDetail.getKey())) {
+                                Trigger trigger = TriggerBuilder.newTrigger().withSchedule(CronScheduleBuilder.cronSchedule(detail.getCron()).withMisfireHandlingInstructionDoNothing()).build();
+                                scheduler.scheduleJob(jobDetail, trigger);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }

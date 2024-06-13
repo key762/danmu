@@ -9,6 +9,7 @@ public class Detail {
     private String desc;
     private boolean enable;
     private boolean immediately;
+    public boolean timer;
     private String cron;
     private String delMark;
     private String reName;

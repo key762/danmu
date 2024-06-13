@@ -6,6 +6,7 @@ task:
     - desc: 庆余年第一季
       enable: false #是否启用
       immediately: false  #启动后是否立即执行一次
+      timer: false #是否启用定时任务
       cron: 5 * * * * ? #定时任务
       delMark: 腾讯弹幕 #删除旧的ass文件包含的标志,为空则不删除
       reName: 腾讯弹幕($@{FormatDate(${time},yyyy-MM-dd)}) #用于保存处理完成后的文件名,${time}标识当前时间,FormatDate时间函数
@@ -17,6 +18,7 @@ task:
     - desc: 庆余年第二季
       enable: false
       immediately: false
+      timer: false
       cron: 0 30 3 * * ?
       delMark: 腾讯弹幕
       reName: 腾讯弹幕(24-06-05)
@@ -28,6 +30,7 @@ task:
     - desc: MacOS庆余年第二季
       enable: false
       immediately: true
+      timer: false
       cron: 0 30 3 * * ?
       delMark: 腾讯弹幕
       reName: 腾讯弹幕($@{FormatDate(${time},yyyy-MM-dd)})
@@ -39,6 +42,7 @@ task:
     - desc: 爱奇艺弹幕
       enable: true
       immediately: true
+      timer: false
       cron: 0 30 3 * * ?
       delMark: 爱奇艺弹幕
       reName: 爱奇艺弹幕

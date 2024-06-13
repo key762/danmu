@@ -72,7 +72,7 @@ public class vQqEngine {
             Elements elements = allElements.get(0).getElementsByAttribute("data-vid");
             for (Element element : elements) {
                 String key = element.attributes().get("data-vid");
-                if (!element.getElementsByClass("playlist-item-rect__title").get(0).text().equals("彩蛋")) {
+                if (!element.getElementsByClass("playlist-item-rect__title").get(0).text().contains("彩蛋")) {
                     Integer index = Integer.valueOf(element.getElementsByClass("playlist-item-rect__title").get(0).text());
                     Elements ts = element.getElementsByClass("b-imgtag2 b-imgtag2--right-top b-imgtag2--small");
                     if (!ts.isEmpty()) {
