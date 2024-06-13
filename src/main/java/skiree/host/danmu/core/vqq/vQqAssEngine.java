@@ -6,6 +6,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.vdurmont.emoji.EmojiParser;
+import skiree.host.danmu.data.AssConf;
 import skiree.host.danmu.data.DanMu;
 import skiree.host.danmu.data.DanMuBar;
 
@@ -85,7 +86,7 @@ public class vQqAssEngine {
         Map<Long, List<DanMu>> sortedRes = new TreeMap<>(res);
         DanMuBar[] danMuBars = new DanMuBar[4];
         for (int i = 0; i < danMuBars.length; i++) {
-            danMuBars[i] = new DanMuBar("{\\move(2880," + (80 + i * 80) + ",END_MARK," + (80 + i * 80) + ",TIME_MARK)\\fs" + size + "}");
+            danMuBars[i] = new DanMuBar("{\\move(2880," + (80 + i * 80) + ",END_MARK," + (80 + i * 80) + ",TIME_MARK)\\fs" + AssConf.size + "}");
         }
         for (Map.Entry<Long, List<DanMu>> entry : sortedRes.entrySet()) {
             Lock lock = new ReentrantLock();
