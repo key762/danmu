@@ -8,6 +8,8 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import skiree.host.danmu.core.iqiyi.modle.Node;
 import skiree.host.danmu.core.vqq.vQqAssEngine;
 import skiree.host.danmu.data.ASS;
@@ -55,7 +57,17 @@ public class iQiYiEngine {
     }
 
     public static Map<Integer, Node> idMap(Detail detail) {
-        String videoIds = detail.getTvId();
+        if (CollectionUtils.isEmpty(detail.getSource())) {
+            throw new RuntimeException("必须配置source属性");
+        }
+        String videoIds = "";
+        while (StringUtils.isBlank(videoIds)) {
+            try {
+                videoIds = HttpUtil.get(detail.getSource().get(0), CharsetUtil.CHARSET_UTF_8);
+            } catch (Exception e) {
+                videoIds = "";
+            }
+        }
         String device_id = "886da22f802790939404d609e17d421e";
         String app_version = "12.61.16237";
         String timestamp = String.valueOf(System.currentTimeMillis());

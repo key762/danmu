@@ -16,5 +16,4 @@ public class Detail {
     private List<String> source;
     private String path;
     public String type;
-    public String tvId;
 }
