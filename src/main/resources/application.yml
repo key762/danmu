@@ -1,28 +1,45 @@
 server:
   port: 8099
-
+#
 task:
   danmu:
-    - desc: 庆余年第一季
-      enable: false #是否启用
-      immediately: false  #启动后是否立即执行一次
-      timer: false #是否启用定时任务
-      cron: 5 * * * * ? #定时任务
-      delMark: 腾讯弹幕 #删除旧的ass文件包含的标志,为空则不删除
-      reName: 腾讯弹幕($@{FormatDate(${time},yyyy-MM-dd)}) #用于保存处理完成后的文件名,${time}标识当前时间,FormatDate时间函数
-      source: #腾讯视频的播放页面,如果多页就需要配多个URL
-        - https://v.qq.com/x/cover/rjae621myqca41h/i0032qxbi2v.html
-        - https://v.qq.com/x/cover/rjae621myqca41h/v0033usud3k.html
-      path: C:\Users\zxp21\Videos\弹幕\庆余年 (2019)\Season 1 #保存到本地的路径
-      type: vqq # 弹幕 类型 vqq 腾讯 iqiyi 爱奇艺
-    - desc: 爱奇艺弹幕
-      enable: true
-      immediately: true
-      timer: false
-      cron: 0 30 3 * * ?
-      delMark: 爱奇艺弹幕
-      reName: 爱奇艺弹幕
-      source:
-        - https://www.iqiyi.com/v_2ffkws0bgr0.html
-      path: C:\Users\zxp21\Videos\弹幕\隐秘的角落 (2020)\Season 1
-      type: iqiyi
+#    - desc: 庆余年第一季
+#      enable: false #是否启用
+#      immediately: false  #启动后是否立即执行一次
+#      timer: false #是否启用定时任务
+#      cron: 5 * * * * ? #定时任务
+#      delMark: 腾讯弹幕 #删除旧的ass文件包含的标志,为空则不删除
+#      reName: 腾讯弹幕($@{FormatDate(${time},yyyy-MM-dd)}) #用于保存处理完成后的文件名,${time}标识当前时间,FormatDate时间函数
+#      source: #腾讯视频的播放页面,如果多页就需要配多个URL
+#        - https://v.qq.com/x/cover/rjae621myqca41h/i0032qxbi2v.html
+#        - https://v.qq.com/x/cover/rjae621myqca41h/v0033usud3k.html
+#      path: C:\Users\zxp21\Videos\弹幕\庆余年 (2019)\Season 1 #保存到本地的路径
+#      type: vqq # 弹幕 类型 vqq 腾讯 iqiyi 爱奇艺
+#    - desc: 爱奇艺弹幕
+#      enable: true
+#      immediately: true
+#      timer: false
+#      cron: 0 30 3 * * ?
+#      delMark: 爱奇艺弹幕
+#      reName: 爱奇艺弹幕
+#      source:
+#        - https://www.iqiyi.com/v_2ffkws0bgr0.html
+#      path: C:\Users\zxp21\Videos\弹幕\隐秘的角落 (2020)\Season 1
+#      type: iqiyi
+
+spring:
+  mvc:
+    static-path-pattern: classpath:/**
+  # 配置 Oracle
+  datasource:
+    driver-class-name: org.sqlite.JDBC  #数据库链接驱动
+    url: jdbc:sqlite::resource:db/danmu.db #数据库链接地址
+    type: com.alibaba.druid.pool.DruidDataSource
+
+# mybatis配置
+mybatis:
+  mapper-locations: classpath:mapper/*.xml    # mapper映射文件位置
+  type-aliases-package: skiree.host.danmu.model    # 实体类所在的位置
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   #用于控制台打印sql语句
+    map-underscore-to-camel-case: true

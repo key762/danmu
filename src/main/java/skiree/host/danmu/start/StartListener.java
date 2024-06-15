@@ -25,7 +25,7 @@ public class StartListener implements ApplicationRunner {
 
     public void run(ApplicationArguments args) throws SchedulerException {
         Scheduler scheduler = gSchedulerFactory.getScheduler();
-        if (!task.getDanmu().isEmpty()) {
+        if (task != null && !task.getDanmu().isEmpty()) {
             for (Detail detail : task.getDanmu()) {
                 if (detail.isEnable()) {
                     if (detail.isImmediately()) {
