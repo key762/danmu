@@ -68,3 +68,9 @@ sa-token:
   token-style: uuid
   # 是否输出操作日志
   is-log: true
+
+danmu:
+  #  管理平台账号
+  user: admin
+  #  管理平台密码
+  password: 2940397985
