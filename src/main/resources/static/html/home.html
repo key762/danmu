@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CodeFort控制台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h3 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: rgb(144, 129, 241);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+            background-color: rgb(144, 129, 241);
+            color: white;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 0 1rem 0.2rem rgba(0, 0, 0, 0.1);
+            margin-top: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: rgb(144, 129, 241);
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            margin-right: 1rem;
+            border: none;
+            border-radius: 0.3rem;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: rgb(144, 129, 241);
+            color: white;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: #333;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            background-color: #fff;
+            width: 100%;
+            max-width: 500px; /* 设置最大宽度以保持内容居中且不过分扩展 */
+            margin: 0 auto; /* 水平居中 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .acc {
+            width: 100%;
+            height: 3rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem; /* 调整与下方按钮的间距 */
+            padding: 0.5rem;
+            border: none;
+            border-bottom: 2px solid rgb(144, 129, 241); /* 调整下划线粗细 */
+            color: rgb(144, 129, 241);
+            background-color: transparent;
+            outline: none;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-around; /* 将按钮对称放置 */
+            width: 100%;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: rgb(144, 129, 241);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <h3>CodeFort控制台</h3>
+    <a th:href="@{/doLogout}" class="logout-btn">退出</a>
+</div>
+
+<div class="container">
+    <h1>服务列表</h1>
+    <div class="table-responsive">
+        <table class="table table-striped custom-table">
+            <thead>
+            <tr>
+                <th>CPU序列号</th>
+                <th>IP信息</th>
+                <th>版本</th>
+                <th>密码</th>
+                <th>可用毫秒</th>
+                <th>编译时间</th>
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="data : ${dataList}" class="rounded-row">
+                <td th:text="${data.cpuSerial}"></td>
+                <td th:text="${data.ipInfo}"></td>
+                <td th:text="${data.version}"></td>
+                <td th:text="${data.password}"></td>
+                <td th:text="${data.availableTime}"></td>
+                <td th:text="${#dates.format(data.buildTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${#dates.format(data.startTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${#dates.format(data.endTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <!-- 提示按钮 -->
+                        <a href="#" th:onclick="showPopup([[${data.cpuSerial}]])">提示</a>
+                        <!-- 下线按钮 -->
+                        <a th:href="@{'/fortOut/' + ${data.cpuSerial}}" class="dropdown-item btn btn-danger">下线</a>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="overlay" id="overlay" style="display: none;">
+    <form class="popup" id="myform" th:action="@{'/fortInfo/'}" method="post">
+        <input class="acc" type="text" name="data" placeholder="请输入信息" id="inputField">
+        <div class="btn-container">
+            <button type="submit" class="btn btn-primary">提交</button>
+            <button type="button" class="btn btn-secondary" onclick="hidePopup()">取消</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.getElementById('overlay').style.display = 'none';
+    });
+
+    function showPopup(cpuSerial) {
+        document.getElementById('myform').action = "/fortInfo/" + cpuSerial;
+        document.getElementById('overlay').style.display = 'flex';
+    }
+
+    function hidePopup() {
+        document.getElementById('overlay').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>

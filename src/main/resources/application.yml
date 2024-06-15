@@ -1,5 +1,5 @@
 server:
-  port: 8099
+  port: 8091
 
 task:
   danmu:
@@ -17,8 +17,8 @@ task:
       type: vqq # 弹幕 类型 vqq 腾讯 iqiyi 爱奇艺
     - desc: 爱奇艺弹幕
       enable: true
-      immediately: true
-      timer: false
+      immediately: false
+      timer: true
       cron: 0 30 3 * * ?
       delMark: 爱奇艺弹幕
       reName: 爱奇艺弹幕
@@ -28,12 +28,24 @@ task:
       type: iqiyi
 
 spring:
+  thymeleaf:
+    cache: false
+    check-template: true
+    check-template-location: true
+    enabled: true
+    encoding: UTF-8
+    excluded-view-names:
+    mode: HTML5
+    prefix: classpath:/static/html/
+    suffix: .html
   mvc:
-    static-path-pattern: classpath:/**
+    static-path-pattern: /static/**
   datasource:
     driver-class-name: org.sqlite.JDBC
     url: jdbc:sqlite::resource:db/danmu.db
     type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      validation-query: select 1
 mybatis:
   mapper-locations: classpath:db/mapper/*.xml
   type-aliases-package: skiree.host.danmu.model

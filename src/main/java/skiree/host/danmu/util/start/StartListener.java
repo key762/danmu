@@ -49,9 +49,9 @@ public class StartListener implements ApplicationRunner {
                     }
                 }
             }
-        }
-        if (!scheduler.isStarted()) {
-            scheduler.start();
+            if (!scheduler.isStarted()) {
+                scheduler.start();
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import org.quartz.impl.StdSchedulerFactory;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.quartz.impl.triggers.CronTriggerImpl;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -16,7 +17,12 @@ public class BasicController {
 
     private static final SchedulerFactory gSchedulerFactory = new StdSchedulerFactory();
 
-    // http://127.0.0.1:8099/job
+    @GetMapping("/")
+    public String index() {
+        return "login";
+    }
+
+    // http://127.0.0.1:8091/job
     @ResponseBody
     @RequestMapping("/job")
     public Object job() throws SchedulerException {
