@@ -1,4 +1,4 @@
-package skiree.host.danmu.core.iqiyi;
+package skiree.host.danmu.service.core.iqiyi;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
@@ -10,12 +10,12 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
-import skiree.host.danmu.core.iqiyi.modle.Node;
-import skiree.host.danmu.core.vqq.vQqAssEngine;
-import skiree.host.danmu.data.ASS;
-import skiree.host.danmu.data.Detail;
-import skiree.host.danmu.data.DanMu;
-import skiree.host.danmu.substitutor.CustomSubstitutor;
+import skiree.host.danmu.service.core.iqiyi.modle.Node;
+import skiree.host.danmu.service.core.vqq.vQqAssEngine;
+import skiree.host.danmu.model.ass.ASS;
+import skiree.host.danmu.model.task.Detail;
+import skiree.host.danmu.model.engine.DanMu;
+import skiree.host.danmu.util.substitutor.CustomSubstitutor;
 
 import java.io.File;
 import java.util.*;

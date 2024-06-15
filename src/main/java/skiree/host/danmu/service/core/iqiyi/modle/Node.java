@@ -1,4 +1,4 @@
-package skiree.host.danmu.core.iqiyi.modle;
+package skiree.host.danmu.service.core.iqiyi.modle;
 
 import lombok.Data;
 

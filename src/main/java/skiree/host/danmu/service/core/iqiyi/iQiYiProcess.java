@@ -1,8 +1,8 @@
-package skiree.host.danmu.core.iqiyi;
+package skiree.host.danmu.service.core.iqiyi;
 
 import org.springframework.stereotype.Component;
-import skiree.host.danmu.core.Stratege;
-import skiree.host.danmu.data.Detail;
+import skiree.host.danmu.service.core.Stratege;
+import skiree.host.danmu.model.task.Detail;
 
 @Component
 public class iQiYiProcess implements Stratege {

@@ -1,4 +1,4 @@
-package skiree.host.danmu.start;
+package skiree.host.danmu.util.start;
 
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -6,9 +6,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.stereotype.Component;
-import skiree.host.danmu.core.Stratege;
-import skiree.host.danmu.data.Detail;
-import skiree.host.danmu.data.Task;
+import skiree.host.danmu.service.core.Stratege;
+import skiree.host.danmu.model.task.Detail;
+import skiree.host.danmu.model.task.Task;
 
 import javax.annotation.Resource;
 

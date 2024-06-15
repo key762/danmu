@@ -1,4 +1,4 @@
-package skiree.host.danmu.data;
+package skiree.host.danmu.model.ass;
 
 import lombok.Data;
 

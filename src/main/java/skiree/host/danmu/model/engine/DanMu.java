@@ -1,10 +1,11 @@
-package skiree.host.danmu.data;
+package skiree.host.danmu.model.engine;
 
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import skiree.host.danmu.model.ass.AssConf;
 
 import java.math.BigDecimal;
 import java.util.Date;

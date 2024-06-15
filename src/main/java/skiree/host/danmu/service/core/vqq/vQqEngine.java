@@ -1,4 +1,4 @@
-package skiree.host.danmu.core.vqq;
+package skiree.host.danmu.service.core.vqq;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
@@ -6,10 +6,10 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import skiree.host.danmu.data.ASS;
-import skiree.host.danmu.data.Detail;
-import skiree.host.danmu.data.DanMu;
-import skiree.host.danmu.substitutor.CustomSubstitutor;
+import skiree.host.danmu.model.ass.ASS;
+import skiree.host.danmu.model.task.Detail;
+import skiree.host.danmu.model.engine.DanMu;
+import skiree.host.danmu.util.substitutor.CustomSubstitutor;
 
 import java.io.File;
 import java.util.*;

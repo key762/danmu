@@ -1,4 +1,4 @@
-package skiree.host.danmu.substitutor;
+package skiree.host.danmu.util.substitutor;
 
 import cn.hutool.core.date.DateUtil;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package skiree.host.danmu.core.vqq;
+package skiree.host.danmu.service.core.vqq;
 
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.http.HttpUtil;
@@ -6,9 +6,9 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.vdurmont.emoji.EmojiParser;
-import skiree.host.danmu.data.AssConf;
-import skiree.host.danmu.data.DanMu;
-import skiree.host.danmu.data.DanMuBar;
+import skiree.host.danmu.model.ass.AssConf;
+import skiree.host.danmu.model.engine.DanMu;
+import skiree.host.danmu.model.engine.DanMuBar;
 
 import java.math.BigDecimal;
 import java.util.*;

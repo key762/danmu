@@ -1,4 +1,4 @@
-package skiree.host.danmu.substitutor;
+package skiree.host.danmu.util.substitutor;
 
 import org.springframework.beans.factory.InitializingBean;
 
