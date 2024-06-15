@@ -30,16 +30,13 @@ task:
 spring:
   mvc:
     static-path-pattern: classpath:/**
-  # 配置 Oracle
   datasource:
-    driver-class-name: org.sqlite.JDBC  #数据库链接驱动
-    url: jdbc:sqlite::resource:db/danmu.db #数据库链接地址
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite::resource:db/danmu.db
     type: com.alibaba.druid.pool.DruidDataSource
-
-# mybatis配置
 mybatis:
-  mapper-locations: classpath:mapper/*.xml    # mapper映射文件位置
-  type-aliases-package: skiree.host.danmu.model    # 实体类所在的位置
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: skiree.host.danmu.model
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   #用于控制台打印sql语句
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
