@@ -43,6 +43,9 @@ public class iQiYiAssEngine {
             }catch (Exception e){
                 node.setDuration(null);
                 node.setId(null);
+                try {
+                    Thread.sleep(1000L);
+                }catch (Exception ignore){}
             }
         }
         int i_length = (int) Math.ceil(node.getDuration() / 300);

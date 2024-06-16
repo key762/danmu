@@ -63,7 +63,11 @@ public class iQiYiEngine {
         String videoIds = "";
         while (StringUtils.isBlank(videoIds)) {
             try {
-                videoIds = HttpUtil.get(detail.getSource().get(0), CharsetUtil.CHARSET_UTF_8);
+                String resultInfo = HttpUtil.get(detail.getSource().get(0), CharsetUtil.CHARSET_UTF_8);
+                Matcher matcher2 = Pattern.compile("window\\.QiyiPlayerProphetData=\\{\"tvid\":(\\d+),").matcher(resultInfo);
+                if (matcher2.find()) {
+                    videoIds = matcher2.group(1);
+                }
             } catch (Exception e) {
                 videoIds = "";
             }

@@ -15,16 +15,16 @@ task:
         - https://v.qq.com/x/cover/rjae621myqca41h/v0033usud3k.html
       path: C:\Users\zxp21\Videos\弹幕\庆余年 (2019)\Season 1 #保存到本地的路径
       type: vqq # 弹幕 类型 vqq 腾讯 iqiyi 爱奇艺
-    - desc: 爱奇艺弹幕
+    - desc: 看不见影子的少年-爱奇艺弹幕
       enable: true
-      immediately: false
-      timer: true
+      immediately: true
+      timer: false
       cron: 0 30 3 * * ?
       delMark: 爱奇艺弹幕
       reName: 爱奇艺弹幕
       source:
-        - https://www.iqiyi.com/v_2ffkws0bgr0.html
-      path: C:\Users\zxp21\Videos\弹幕\隐秘的角落 (2020)\Season 1
+        - https://www.iqiyi.com/v_9yfo951gk4.html
+      path: C:\Users\zxp21\Videos\剧集\看不见影子的少年 (2024)\Season 1
       type: iqiyi
 
 spring:
