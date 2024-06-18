@@ -16,8 +16,8 @@ task:
       path: C:\Users\zxp21\Videos\弹幕\庆余年 (2019)\Season 1 #保存到本地的路径
       type: vqq # 弹幕 类型 vqq 腾讯 iqiyi 爱奇艺
     - desc: 看不见影子的少年-爱奇艺弹幕
-      enable: true
-      immediately: true
+      enable: false
+      immediately: false
       timer: false
       cron: 0 30 3 * * ?
       delMark: 爱奇艺弹幕

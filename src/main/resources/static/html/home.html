@@ -1,228 +1,166 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <meta charset="UTF-8">
-    <title>CodeFort控制台</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <title>DanMu管理平台</title>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(90deg, #a4a0c7 0, #60b8b7 58%);
+    }
 
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
-            color: #333;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
+    .left {
+      float: left;
+    }
 
-        h3 {
-            font-size: 2.5rem;
-            margin-bottom: 2rem;
-            color: rgb(144, 129, 241);
-        }
+    .right {
+      float: right;
+    }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
+    .pg-content .menu {
+      position: absolute;
+      top: 60px;
+      left: 0;
+      bottom: 0;
+      width: 210px;
+      border-right: 2px solid rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(2px);
+      background-color: transparent;
+    }
 
-        .logout-btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.3rem;
-            cursor: pointer;
-            background-color: rgb(144, 129, 241);
-            color: white;
-        }
+    .pg-content .content {
+      position: absolute;
+      top: 60px;
+      right: 0;
+      bottom: 0;
+      left: 210px;
+      overflow: auto;
+      z-index: 9;
+      /*z-index是层级，谁大谁就在上层*/
+      /* background-color: cadetblue; */
+      font-size: 50px;
+    }
 
-        .container {
-            background-color: rgba(255, 255, 255, 0.6);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            box-shadow: 0 0 1rem 0.2rem rgba(0, 0, 0, 0.1);
-            margin-top: 2rem;
-        }
+    @font-face {
+      font-family: 'PingFang';
+      src: url('../font/PingFang.ttf');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .pg-header {
+      height: 58px;
+      color: white;
+      line-height: 58px;
+      border-width: 2px;
+      border-color: rgb(30, 174, 184);
+      box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(2px);
+      background-color: transparent;
+    }
 
-        th, td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+    .pg-header .user .b {
+      font-family: 'PingFang';
+      z-index: 1;
+      position: absolute;
+      top: 53px;
+      right: 10px;
+      border-width: 10px;
+      background-color: #61dcda;
+      color: black;
+      width: 150px;
+      text-align: center;
+      display: none;
+      border-radius: 5px;
+    }
 
-        th {
-            background-color: rgb(144, 129, 241);
-            color: white;
-        }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
+    .pg-header .user {
+      width: 80px;
+      background-color: transparent;
+      color: white;
+      height: 60px;
+    }
 
-        .btn {
-            padding: 0.5rem 1rem;
-            margin-right: 1rem;
-            border: none;
-            border-radius: 0.3rem;
-            cursor: pointer;
-        }
 
-        .btn-primary {
-            background-color: rgb(144, 129, 241);
-            color: white;
-        }
+    .pg-header .user:hover img {
+      border-width: 8px;
+      border-color: rgb(18, 231, 220);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      background-color: transparent;
+    }
 
-        .btn-secondary {
-            background-color: #ccc;
-            color: #333;
-        }
+    @font-face {
+      font-family: 'ComicSans';
+      src: url("../static/font/ComicSans.ttf");
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+    .pg-header .logo {
+      font-family: "ComicSans";
+      color: rgb(99, 240, 245);
+      font-size: 1.75rem;
+      font-weight: bolder;
+      width: 210px;
+      background-color: transparent;
+      text-align: center;
+    }
 
-        .popup {
-            background-color: #fff;
-            width: 100%;
-            max-width: 500px; /* 设置最大宽度以保持内容居中且不过分扩展 */
-            margin: 0 auto; /* 水平居中 */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .acc {
-            width: 100%;
-            height: 3rem;
-            font-size: 1.2rem;
-            margin-bottom: 1rem; /* 调整与下方按钮的间距 */
-            padding: 0.5rem;
-            border: none;
-            border-bottom: 2px solid rgb(144, 129, 241); /* 调整下划线粗细 */
-            color: rgb(144, 129, 241);
-            background-color: transparent;
-            outline: none;
-        }
-
-        .btn-container {
-            display: flex;
-            justify-content: space-around; /* 将按钮对称放置 */
-            width: 100%;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .btn-primary {
-            background-color: rgb(144, 129, 241);
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background-color: #ccc;
-            color: #000;
-        }
-    </style>
+    .avatar img {
+      width: 50px;
+      height: 50px;
+      margin-top: 4px;
+      border-radius: 50%;
+      border-width: 4px;
+      border-color: rgb(30, 174, 184);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      background-color: transparent;
+    }
+  </style>
 </head>
+
 <body>
-<div class="header">
-    <h3>DanMU控制台</h3>
-    <a th:href="@{/doLogout}" class="logout-btn">退出</a>
-</div>
 
-<div class="container">
-    <h1>服务列表</h1>
-    <div class="table-responsive">
-        <table class="table table-striped custom-table">
-            <thead>
-            <tr>
-                <th>CPU序列号</th>
-                <th>IP信息</th>
-                <th>版本</th>
-                <th>密码</th>
-                <th>可用毫秒</th>
-                <th>编译时间</th>
-                <th>开始时间</th>
-                <th>结束时间</th>
-                <th>操作</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="data : ${dataList}" class="rounded-row">
-                <td th:text="${data.cpuSerial}"></td>
-                <td th:text="${data.ipInfo}"></td>
-                <td th:text="${data.version}"></td>
-                <td th:text="${data.password}"></td>
-                <td th:text="${data.availableTime}"></td>
-                <td th:text="${#dates.format(data.buildTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td th:text="${#dates.format(data.startTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td th:text="${#dates.format(data.endTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-                <td>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <!-- 提示按钮 -->
-                        <a href="#" th:onclick="showPopup([[${data.cpuSerial}]])">提示</a>
-                        <!-- 下线按钮 -->
-                        <a th:href="@{'/fortOut/' + ${data.cpuSerial}}" class="dropdown-item btn btn-danger">下线</a>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+
+
+  <div class="pg-header">
+    <div class="logo left">DanMu Console</div>
+    <div class="user right" style="position: relative">
+      <a class="avatar" th:href="@{/doLogout}">
+        <img src="../static/img/avatar.jpg" alt="头像无法展示" title="注销" />
+      </a>
     </div>
-</div>
+  </div>
 
-<div class="overlay" id="overlay" style="display: none;">
-    <form class="popup" id="myform" th:action="@{'/fortInfo/'}" method="post">
-        <input class="acc" type="text" name="data" placeholder="请输入信息" id="inputField">
-        <div class="btn-container">
-            <button type="submit" class="btn btn-primary">提交</button>
-            <button type="button" class="btn btn-secondary" onclick="hidePopup()">取消</button>
-        </div>
-    </form>
-</div>
+  <div class="pg-content">
+    <div class="menu left">
+      <ul>
+        <li data-src="../static/html/a.html">11</li>
+        <li data-src="../static/html/b.html">22</li>
+        <li data-src="../static/html/c.html">33</li>
+      </ul>
+    </div>
+    <div class="content right">
+      <iframe frameborder="0" scrolling="yes" src="../static/html/a.html" id="aa"></iframe>
+    </div>
+  </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById('overlay').style.display = 'none';
-    });
 
-    function showPopup(cpuSerial) {
-        document.getElementById('myform').action = "/fortInfo/" + cpuSerial;
-        document.getElementById('overlay').style.display = 'flex';
+  <script type="text/javascript">
+    let items = document.getElementsByTagName("li");
+    for (let i = 0; i < items.length; i++) {
+      items[i].onclick = function () {
+        let src = items[i].getAttribute("data-src")
+        document.getElementById("aa").setAttribute("src", src)
+      }
     }
-
-    function hidePopup() {
-        document.getElementById('overlay').style.display = 'none';
-    }
-</script>
-
+  </script>
 </body>
+
 </html>

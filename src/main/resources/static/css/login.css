@@ -1,0 +1,204 @@
+@font-face {
+    font-family: 'ComicSans';
+    src: url("../font/ComicSans.ttf");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Clerical';
+    src: url('../font/Clerical.woff2') format('woff2'),
+        url('../font/Clerical.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'PingFang';
+    src: url('../font/PingFang.ttf');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.style0 {
+    margin-top: 0rem;
+    background-color: rebeccapurple;
+}
+
+.style1 {
+    font-family: "ComicSans";
+    font-size: 5rem;
+    margin-top: 1rem;
+    color: rgb(121, 210, 222);
+    margin-bottom: 1rem;
+}
+
+.style2 {
+    font-family: "Clerical";
+    font-weight: bolder;
+    font-size: 3rem;
+    margin-top: 0.5rem;
+    color: rgb(137, 215, 218);
+    margin-bottom: 1rem;
+}
+
+.style3 {
+    left: 150px;
+    display: block;
+    text-align: center;
+    font-family: "PingFang";
+    font-weight: bolder;
+    color: rgb(121, 210, 222);
+    font-size: 3rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.style4 {
+    margin-left: 4%;
+    margin-bottom: 0%;
+    display: inline;
+    font-family: "PingFang";
+    font-weight: bolder;
+    color: rgb(121, 210, 222);
+    font-size: 1.5rem;
+}
+
+.svg {
+    margin-top: 35px;
+    margin-right: 100px;
+    margin-bottom: 1rem;
+}
+
+.svg img {
+    margin-right: 60px;
+}
+
+body {
+    padding: 2.5rem;
+    margin: 0;
+    background: linear-gradient(90deg, #a4a0c7 0, #60b8b7 58%);
+}
+
+#main {
+    height: 160px;
+    width: 100%;
+    margin-left: 0%;
+    margin-right: 0%;
+    margin-bottom: 0%;
+    position: relative;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    overflow: hidden;
+}
+
+.danmu0 {
+    position: absolute;
+    font-size: 25px;
+    color: white;
+    white-space: nowrap;
+    animation: danmu 12s linear forwards;
+    background-color: rgba(128, 128, 128, 0.3);
+    border-radius: 5px;
+    padding: 0.3px;
+}
+
+.danmu1 {
+    position: absolute;
+    font-size: 25px;
+    color: rgb(221, 167, 30);
+    white-space: nowrap;
+    animation: danmu 12s linear forwards;
+    background-color: rgba(128, 128, 128, 0.3);
+    border-radius: 5px;
+    padding: 0.3px;
+}
+
+.danmu2 {
+    position: absolute;
+    font-size: 25px;
+    color: rgb(233, 33, 33);
+    white-space: nowrap;
+    animation: danmu 12s linear forwards;
+    background-color: rgba(128, 128, 128, 0.3);
+    border-radius: 5px;
+    padding: 0.3px;
+}
+
+.danmu3 {
+    position: absolute;
+    font-size: 25px;
+    color: rgb(42, 202, 231);
+    white-space: nowrap;
+    animation: danmu 12s linear forwards;
+    background-color: rgba(128, 128, 128, 0.3);
+    border-radius: 5px;
+    padding: 0.3px;
+}
+
+
+#login {
+    height: 320px;
+    width: 500px;
+    position: absolute;
+    top: 34%;
+    left: 58%;
+    border-width: 5px;
+    border-color: rgb(30, 174, 184);
+    border-radius: 10px;
+    box-shadow: 0 0 100px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    background-color: transparent;
+}
+
+
+#login form {
+    backdrop-filter: none;
+}
+
+.acc {
+    margin-left: 6%;
+    width: 60%;
+    height: 0.8rem;
+    font-size: 1rem;
+    margin-top: 1.5rem;
+    padding: 0.8rem;
+    border: none;
+    border-bottom: 2px solid rgb(81, 198, 214);
+    color: rgb(195, 160, 22);
+    background-color: transparent;
+    outline: none;
+    border-radius: 6px;
+}
+
+.acc:focus {
+    color: rgb(195, 160, 22);
+    border-bottom: 3px solid rgb(48, 195, 215);
+}
+
+.button {
+    width: 38%;
+    height: 80%;
+    color: #fff;
+    background: #4ccfcc;
+    font-size: 1.4rem;
+    border: none;
+    border-radius: 0.5rem;
+    margin-top: 2rem;
+    cursor: pointer;
+    margin-left: 25px;
+}
+
+@keyframes danmu {
+    0% {
+        left: 100%;
+    }
+
+    100% {
+        left: -100%;
+    }
+}
