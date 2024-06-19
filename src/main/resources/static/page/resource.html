@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>DanMu管理平台</title>
+    <meta charset="UTF-8">
+    <script src="../js/jquery-3.7.1.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 获取资源列表
+            function getResources() {
+                $.ajax({
+                    url: "http://127.0.0.1:8091/resource/list",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        var table = $("#table"); // 获取表格元素
+                        table.empty(); // 清空表格内容
+                        table.append("<tr><th>编码</th><th>名称</th><th>路径</th><th>操作</th></tr>");
+                        data.forEach(function (resource) {
+                            var row = $("<tr>"); // 创建表格行
+                            row.append("<td>" + resource.id + "</td>"); // 添加单元格内容
+                            row.append("<td>" + resource.name + "</td>");
+                            row.append("<td>" + resource.path + "</td>");
+                            var actions = $("<td>"); // 创建操作列
+                            var deleteBtn = $("<button>Delete</button>"); // 删除按钮
+                            deleteBtn.click(function () {
+                                deleteResource(resource.id); // 调用删除资源函数
+                            });
+                            var updateBtn = $("<button>Update</button>"); // 更新按钮
+                            updateBtn.click(function () {
+                                doUpdateResource(resource.id, resource.name, resource.path); // 调用更新资源函数
+                            });
+                            actions.append(deleteBtn); // 将按钮添加到操作列
+                            actions.append(updateBtn);
+                            row.append(actions); // 将操作列添加到表格行
+                            table.append(row); // 将表格行添加到表格中
+                        });
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("请求资源列表失败: " + error);
+                    }
+                });
+            }
+
+            // 删除资源
+            function deleteResource(resourceId) {
+                $.ajax({
+                    url: "http://127.0.0.1:8091/resource/delete/" + resourceId,
+                    type: "GET",
+                    dataType: "json",
+                    success: function (data) {
+                        console.log("删除资源成功");
+                        getResources(); // 刷新资源列表
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("删除资源失败: " + error);
+                    }
+                });
+            }
+
+            // 更新资源
+            function doUpdateResource(resourceId, resourceName, resourcePath) {
+                document.getElementById('overlay').style.display = 'flex';
+                var dataId = document.getElementById('resource-id');
+                dataId.value = resourceId;
+                dataId.disabled = true;
+                dataId.style = "display: true;";
+                document.getElementById('resource-name').value = resourceName;
+                document.getElementById('resource-path').value = resourcePath;
+            }
+
+            // 更新资源
+            function updateResource(resourceId) {
+                if (newName !== null && newPath !== null) {
+                    $.ajax({
+                        url: "http://127.0.0.1:8091/resource/update/" + resourceId,
+                        type: "PUT",
+                        dataType: "json",
+                        data: {
+                            name: newName,
+                            path: newPath
+                        },
+                        success: function (data) {
+                            console.log("更新资源成功");
+                            getResources(); // 刷新资源列表
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("更新资源失败: " + error);
+                        }
+                    });
+                }
+            }
+
+            // 初始化页面
+            getResources();
+        });
+    </script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            /* 删除表格之间的间隔 */
+        }
+
+        table,
+        th,
+        td {
+            border: 2px solid rgb(120, 197, 197);
+            /* 添加表格的边框 */
+            padding: 8px;
+            /* 单元格的内边距 */
+        }
+
+        th {
+            background-color: transparent;
+            color: aqua;
+            font-size: 1.2rem;
+            /* 表头背景色 */
+            /* 表头字体颜色 */
+        }
+
+        tr:nth-child(even) {
+            background-color: transparent;
+            color: black;
+            font-size: 1rem;
+            /* 为偶数行添加背景色 */
+        }
+
+        tr:hover {
+            background-color: transparent;
+            color: aliceblue;
+            font-size: 1rem;
+            /* 鼠标悬浮行的背景色 */
+        }
+
+
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup {
+            background-color: #fff;
+            width: 100%;
+            max-width: 500px;
+            /* 设置最大宽度以保持内容居中且不过分扩展 */
+            margin: 0 auto;
+            /* 水平居中 */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .acc {
+            width: 100%;
+            height: 3rem;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            /* 调整与下方按钮的间距 */
+            padding: 0.5rem;
+            border: none;
+            border-bottom: 2px solid rgb(144, 129, 241);
+            /* 调整下划线粗细 */
+            color: rgb(144, 129, 241);
+            background-color: transparent;
+            outline: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <h3>资源管理</h3>
+    </div>
+
+    <div>
+        <a href="#" onclick="showPopup()">新增</a>
+    </div>
+
+    <div>
+        <table id="table"></table>
+    </div>
+
+    <div class="overlay" id="overlay" style="display: none;">
+        <form class="popup" id="myform" th:action="@{'/fortInfo/'}" method="post">
+            <input id="resource-id" name="id" type="text" placeholder="ID" disabled="true" style="display: none;">
+            <input id="resource-name" name="name" type="text" placeholder="名称">
+            <input id="resource-path" name="path" type="text" placeholder="路径">
+
+            <div id="path-nav">
+                <select id="folder-select" onchange="loadSubFolders(this.value)">
+                    <option value="">选择</option>
+                </select>
+                <a id="back-button" onclick="navigateUp()">返回</a>
+            </div>
+
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">提交</button>
+                <button type="button" class="btn btn-secondary" onclick="hidePopup()">取消</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('overlay').style.display = 'none';
+        });
+
+        function showPopup() {
+            document.getElementById('overlay').style.display = 'flex';
+        }
+
+        function hidePopup() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+
+    <script>
+        var currentPath = "/";
+        $(document).ready(function () {
+            loadTopFolders();
+        });
+
+        function loadTopFolders() {
+            updatePathNav(currentPath);
+            $.ajax({
+                url: "http://127.0.0.1:8091/top-folders",
+                type: "GET",
+                success: function (data) {
+                    var folderSelect = $("#folder-select");
+                    folderSelect.empty();
+                    folderSelect.append($("<option>").val("").text("选择文件夹"));
+                    $.each(data, function (index, folder) {
+                        folderSelect.append($("<option>").val(folder).text(folder.substring(folder.lastIndexOf("/") + 1)));
+                    });
+                },
+                error: function () {
+                    $("#folder-select").append($("<option>").text("无法获取文件夹列表"));
+                }
+            });
+        }
+
+        function loadSubFolders(folderPath) {
+            if (folderPath) {
+                currentPath = folderPath;
+                updatePathNav(currentPath);
+                $.ajax({
+                    url: "http://127.0.0.1:8091/folders",
+                    type: "POST",
+                    data: JSON.stringify(folderPath),
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        var folderSelect = $("#folder-select");
+                        folderSelect.empty();
+                        folderSelect.append($("<option>").val("").text("选择文件夹"));
+                        $.each(data, function (index, folder) {
+                            folderSelect.append($("<option>").val(folder).text(folder.substring(folder.lastIndexOf("/") + 1)));
+                        });
+                    },
+                    error: function () {
+                        $("#folder-select").append($("<option>").text("无法获取文件夹列表"));
+                    }
+                });
+            } else {
+                currentPath = "/";
+                updatePathNav(currentPath);
+                $("#folder-select").empty();
+                $("#folder-select").append($("<option>").val("").text("选择文件夹"));
+            }
+        }
+
+        function navigateUp() {
+            var lastSlashIndex = currentPath.lastIndexOf("/");
+            if (lastSlashIndex > 0) {
+                currentPath = currentPath.substring(0, lastSlashIndex);
+                updatePathNav(currentPath);
+                loadSubFolders(currentPath);
+            } else {
+                currentPath = "/";
+                updatePathNav(currentPath);
+                loadTopFolders();
+            }
+        }
+
+        function updatePathNav(path) {
+            document.getElementById('resource-path').value = path;
+            if (path === "/") {
+                $("#back-button").hide();
+            } else {
+                $("#back-button").show();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="skiree.host.danmu.dao.ResourceMapper">
+
+    <resultMap id="userResultMap" type="skiree.host.danmu.model.Resource">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="path" column="path"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="userResultMap">
+        select * from resource
+    </select>
+
+    <!--    <select id="selectAll" resultMap="userResultMap">-->
+<!--        SELECT * FROM resource-->
+<!--    </select>-->
+
+</mapper>

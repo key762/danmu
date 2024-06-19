@@ -27,13 +27,24 @@ public class BasicController {
     @Value("${danmu.password}")
     private String fortPassword;
 
-    @GetMapping("/")
-    public String index() {
-        return "login";
+    @GetMapping("/show.html")
+    public String show() {
+        return "show";
     }
 
-    @GetMapping("/login")
+    @GetMapping({"/", "/home"})
+    public String home() {
+        if (StpUtil.isLogin()){
+            return "home";
+        }
+        return "redirect:/login";
+    }
+
+    @GetMapping({"/login"})
     public String login() {
+        if (StpUtil.isLogin()){
+            return "redirect:/home";
+        }
         return "login";
     }
 
@@ -48,7 +59,7 @@ public class BasicController {
         if (user.equals(username) && fortPassword.equals(password)) {
             model.addAttribute("loginName", "Admin");
             StpUtil.login("Admin");
-            return "home";
+            return "redirect:/home";
         }
         return "loginFailed";
     }

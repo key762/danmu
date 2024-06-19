@@ -1,0 +1,131 @@
+body {
+    margin: 0;
+    background: linear-gradient(90deg, #a4a0c7 0, #60b8b7 58%);
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.pg-content .menu {
+    position: absolute;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 210px;
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(2px);
+    background-color: transparent;
+}
+
+.pg-content .content {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    bottom: 0;
+    left: 210px;
+    overflow: auto;
+    z-index: 9;
+    font-size: 50px;
+}
+
+.pg-header {
+    height: 58px;
+    color: white;
+    line-height: 58px;
+    border-width: 2px;
+    border-color: rgb(30, 174, 184);
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(2px);
+    background-color: transparent;
+}
+
+@font-face {
+    font-family: 'Clerical';
+    src: url('../font/Clerical.woff2') format('woff2'),
+        url('../font/Clerical.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'PingFang';
+    src: url('../font/PingFang.ttf');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+.pg-header .user {
+    width: 80px;
+    background-color: transparent;
+    color: white;
+    height: 60px;
+}
+
+
+.pg-header .user:hover img {
+    border-width: 8px;
+    border-color: rgb(18, 231, 220);
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    background-color: transparent;
+}
+
+@font-face {
+    font-family: 'ComicSans';
+    src: url("../font/ComicSans.ttf");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.pg-header .logo {
+    font-family: "ComicSans";
+    color: rgb(99, 240, 245);
+    font-size: 1.75rem;
+    font-weight: bolder;
+    width: 210px;
+    background-color: transparent;
+    text-align: center;
+}
+
+.avatar img {
+    width: 50px;
+    height: 50px;
+    margin-top: 4px;
+    border-radius: 50%;
+    border-width: 4px;
+    border-color: rgb(30, 174, 184);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    background-color: transparent;
+}
+
+#ul li {
+    font-family: "PingFang";
+    text-align: center;
+    height: 30px;
+    margin-top: 30px;
+    font-size: 20px;
+    margin-right: 35px;
+    list-style-type: none;
+    margin-top: 1rem;
+    border-radius: 4px;
+    border-width: 4px;
+    border-color: rgb(30, 174, 184);
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    background-color: transparent;
+    color: #60d1cf;
+}
+
+#ul li:hover {
+    color: #255b5a;
+}
