@@ -1,4 +1,4 @@
-package skiree.host.danmu.controller;
+package skiree.host.danmu.controller.api;
 
 import cn.hutool.core.io.FileUtil;
 import org.springframework.stereotype.Controller;
@@ -10,12 +10,7 @@ import java.util.List;
 
 @Controller
 @CrossOrigin
-public class FileController {
-
-    @GetMapping("/file")
-    public String file() {
-        return "file";
-    }
+public class FileApiController {
 
     @GetMapping("/top-folders")
     @ResponseBody
@@ -37,11 +32,12 @@ public class FileController {
         File[] files = dir.listFiles(File::isDirectory);
         if (files != null) {
             for (File file : files) {
-                if (!FileUtil.mainName(file).startsWith(".")){
+                if (!FileUtil.mainName(file).startsWith(".")) {
                     folders.add(file.getAbsolutePath());
                 }
             }
         }
         return folders;
     }
+
 }
