@@ -43,4 +43,10 @@ public class ResourceApiController {
         return resourceService.pageList(page, limit);
     }
 
+    @GetMapping("/resource/select")
+    @ResponseBody
+    public ResultData select() {
+        return resourceService.selectData();
+    }
+
 }

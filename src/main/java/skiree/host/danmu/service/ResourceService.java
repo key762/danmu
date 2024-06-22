@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import skiree.host.danmu.dao.ResourceMapper;
+import skiree.host.danmu.dao.RoutineMapper;
 import skiree.host.danmu.model.Resource;
 import skiree.host.danmu.model.ResultData;
+import skiree.host.danmu.model.Routine;
 
 import java.util.List;
 
@@ -16,18 +18,15 @@ public class ResourceService {
     @Autowired
     private ResourceMapper resourceMapper;
 
-
-    public ResultData selectAll() {
-        List<Resource> resources = resourceMapper.selectList(null);
-        ResultData resultData = new ResultData();
-        resultData.setStatus(200);
-        resultData.setMessage("查询成功");
-//        resultData.setTotal(resources.size());
-        resultData.setData(resources);
-        return resultData;
-    }
+    @Autowired
+    private RoutineMapper routineMapper;
 
     public ResultData deleteData(String id) {
+        QueryWrapper<Routine> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("resource", id);
+        if ( routineMapper.selectCount(queryWrapper) > 0 ) {
+            return new ResultData(406, "资源已被例程使用!");
+        }
         resourceMapper.deleteById(id);
         return new ResultData(200, "OK");
     }
@@ -58,6 +57,10 @@ public class ResourceService {
 
     public ResultData pageList(int page, int limit) {
         return new ResultData(200, "OK", resourceMapper.selectPage(new Page<>(page, limit), null));
+    }
+
+    public ResultData selectData() {
+        return new ResultData(200, "OK", resourceMapper.selectList(null));
     }
 
     private String uniqueId() {

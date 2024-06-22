@@ -3,9 +3,9 @@ layui.use(['table', 'dropdown'], function () {
     var dropdown = layui.dropdown;
     // 创建渲染实例
     table.render({
-        title: '资源文件',
+        title: '例程文件',
         elem: '#test',
-        url: '/resource/list',
+        url: '/routine/list',
         toolbar: '#toolbarDemo',
         defaultToolbar: ['filter', 'exports', 'print'],
         scrollPos: 'fixed', // 最大高度减去其他容器已占有的高度差
@@ -31,24 +31,45 @@ layui.use(['table', 'dropdown'], function () {
         cols: [[
             {
                 field: 'id', fixed: 'left',
-                width: 120,
+                width: 80,
                 maxWidth: 150,
                 title: '编码', sort: true
             },
             {
                 field: 'name',
-                width: 180,
-                maxWidth: 200,
+                width: 210,
+                maxWidth: 250,
                 title: '名称'
             },
             {
-                field: 'path',
-                title: '路径'
+                field: 'type',
+                title: '平台',
+                templet: '#tranType'
             },
             {
+                field: 'resourceName',
+                title: '资源'
+            },
+            // {
+            //     field: 'source',
+            //     title: '播源'
+            // },
+            {
+                field: 'rename',
+                title: '重名'
+            },
+            {
+                field: 'delmark',
+                title: '删标'
+            },
+            // {
+            //     field: 'path',
+            //     title: '路径'
+            // },
+            {
                 fixed: 'right', title: '操作',
-                width: 160,
-                minWidth: 150,
+                width: 130,
+                minWidth: 120,
                 toolbar: '#barDemo'
             }
         ]],
@@ -74,10 +95,10 @@ layui.use(['table', 'dropdown'], function () {
                 var layer = layui.layer;
                 // 新增
                 layer.open({
-                    title: '新增资源',
+                    title: '新增例程',
                     type: 2,
-                    area: ['60%', '60%'],
-                    content: '/resource/add.html',
+                    area: ['60%', '80%'],
+                    content: '/routine/add.html',
                     fixed: false, // 不固定
                     maxmin: true,
                     shadeClose: true,
@@ -85,25 +106,43 @@ layui.use(['table', 'dropdown'], function () {
                     btnAlign: 'c',
                     yes: function (index, layero) {
                         var iframeWin = window[layero.find('iframe')[0]['name']];
-                        var elemName = iframeWin.$('#resource-name');
-                        var elemPath = iframeWin.$('#resource-path');
-                        var name = elemName.val();
-                        var path = elemPath.val();
-                        if ($.trim(name) === '') return elemName.focus();
-                        if ($.trim(path) === '') return elemName.focus();
+                        var elemName = iframeWin.$('#routine-name').val();
+                        var elemType = iframeWin.$('#routine-type').val();
+                        const elemSource = Array.from(iframeWin.$('#add-text input')).map(input => input.value);
+                        var elemRename = iframeWin.$('#routine-rename').val();
+                        var elemDelmark = iframeWin.$('#routine-delmark').val();
+                        var elemResource = iframeWin.$('#routine-select').val();
+                        var elemPath = iframeWin.$('#routine-path').val();
+                        if ($.trim(elemName) === '') return iframeWin.$('#routine-name').focus();
+                        if ($.trim(elemRename) === '') return iframeWin.$('#routine-rename').focus();
+                        if ($.trim(elemResource) === '') return iframeWin.$('#routine-select').focus();
                         // 显示获得的值
                         $.ajax({
-                            url: "/resource/check", // 请求的URL
+                            url: "/routine/check", // 请求的URL
                             type: 'POST', // 请求方法
+                            contentType: 'application/json',
                             dataType: 'json', // 返回的数据格式
-                            data: {"name": name, "path": path},
+                            data: JSON.stringify({
+                                "name": elemName, "delmark": elemDelmark, "rename": elemRename,
+                                "source": JSON.stringify(elemSource), "path": elemPath, "resource": elemResource,
+                                "type": elemType,
+                            }),
                             success: function (res) {
                                 if (res.status === 200) {
                                     $.ajax({
-                                        url: "/resource/add", // 请求的URL
+                                        url: "/routine/add", // 请求的URL
                                         type: 'POST', // 请求方法
+                                        contentType: 'application/json',
                                         dataType: 'json', // 返回的数据格式
-                                        data: {"name": name, "path": path},
+                                        data: JSON.stringify({
+                                            "name": elemName,
+                                            "delmark": elemDelmark,
+                                            "rename": elemRename,
+                                            "source": JSON.stringify(elemSource),
+                                            "path": elemPath,
+                                            "resource": elemResource,
+                                            "type": elemType,
+                                        }),
                                         success: function (res) {
                                             layer.close(index);
                                             table.reload('test', {where: {},});
@@ -142,7 +181,7 @@ layui.use(['table', 'dropdown'], function () {
             layer.confirm('真的删除 [' + data.name + '] 么', function (index) {
                 // 向服务端发送删除指令
                 $.ajax({
-                    url: "/resource/delete/" + data.id, // 请求的URL
+                    url: "/routine/delete/" + data.id, // 请求的URL
                     type: 'GET', // 请求方法
                     dataType: 'json', // 返回的数据格式
                     success: function (res) {
@@ -167,7 +206,7 @@ layui.use(['table', 'dropdown'], function () {
                 title: '编辑资源',
                 type: 2,
                 area: ['60%', '60%'],
-                content: '/resource/update.html',
+                content: '/routine/update.html',
                 fixed: false, // 不固定
                 maxmin: true,
                 shadeClose: true,
@@ -175,20 +214,28 @@ layui.use(['table', 'dropdown'], function () {
                 btnAlign: 'c',
                 yes: function (index, layero) {
                     var iframeWin = window[layero.find('iframe')[0]['name']];
-                    var elemId = iframeWin.$('#resource-id');
-                    var elemName = iframeWin.$('#resource-name');
-                    var elemPath = iframeWin.$('#resource-path');
-                    var id = elemId.val();
-                    var name = elemName.val();
-                    var path = elemPath.val();
-                    if ($.trim(name) === '') return elemName.focus();
-                    if ($.trim(path) === '') return elemName.focus();
+                    var elemId = iframeWin.$('#routine-id').val();
+                    var elemName = iframeWin.$('#routine-name').val();
+                    var elemType = iframeWin.$('#routine-type').val();
+                    const elemSource = Array.from(iframeWin.$('#add-text input')).map(input => input.value);
+                    var elemRename = iframeWin.$('#routine-rename').val();
+                    var elemDelmark = iframeWin.$('#routine-delmark').val();
+                    var elemResource = iframeWin.$('#routine-select').val();
+                    var elemPath = iframeWin.$('#routine-path').val();
+                    if ($.trim(elemName) === '') return iframeWin.$('#routine-name').focus();
+                    if ($.trim(elemRename) === '') return iframeWin.$('#routine-rename').focus();
+                    if ($.trim(elemResource) === '') return iframeWin.$('#routine-select').focus();
                     // 显示获得的值
                     $.ajax({
-                        url: "/resource/update", // 请求的URL
+                        url: "/routine/update", // 请求的URL
                         type: 'POST', // 请求方法
+                        contentType: 'application/json',
                         dataType: 'json', // 返回的数据格式
-                        data: {"id": id, "name": name, "path": path},
+                        data: JSON.stringify({
+                            "id": elemId, "name": elemName, "delmark": elemDelmark, "rename": elemRename,
+                            "source": JSON.stringify(elemSource), "path": elemPath, "resource": elemResource,
+                            "type": elemType,
+                        }),
                         success: function (res) {
                             if (res.status === 200) {
                                 layer.close(index);
@@ -209,10 +256,24 @@ layui.use(['table', 'dropdown'], function () {
                     //得到iframe页的窗口对象
                     var iframeWin = window[layero.find('iframe')[0]['name']];
                     //执行iframe页的showMsg方法
-                    iframeWin.loadSubFolders(obj.data.path);
-                    body.find('#resource-id').val(obj.data.id);
-                    body.find('#resource-name').val(obj.data.name);
-                    body.find('#resource-path').val(obj.data.path);
+                    iframeWin.loadSubFolders(obj.data.resourcePath + obj.data.path);
+                    body.find('#routine-id').val(obj.data.id);
+                    body.find('#routine-name').val(obj.data.name);
+                    body.find('#routine-type').val(obj.data.type);
+                    let sourceArray = JSON.parse(obj.data.source);
+                    sourceArray.forEach((element, index) => {
+                        var sourceStr = sourceArray[index];
+                        if (index === 0) {
+                            body.find('input.folder-select-style[name="data[]"]').val(sourceStr);
+                        } else {
+                            iframeWin.addRowStr(sourceStr);
+                        }
+                    });
+                    body.find('#routine-rename').val(obj.data.rename);
+                    body.find('#routine-delmark').val(obj.data.delmark);
+                    body.find('#routine-select').val(obj.data.resource);
+                    body.find('#routine-path').val(obj.data.resourcePath + obj.data.path);
+
                 }
             });
         }
