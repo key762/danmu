@@ -4,12 +4,64 @@
 <head>
     <title>DanMu管理平台</title>
     <meta charset="UTF-8">
+    <style>
+        .info-container {
+            display: flex;
+            flex-wrap: wrap; /* 允许元素换行 */
+            justify-content: flex-start; /* 左对齐 */
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 10px; /* 控制信息框容器左右的空白 */
+        }
+
+        .info-box {
+            margin-right: 20px; /* 控制信息框之间的间距 */
+            margin-bottom: 20px; /* 控制行之间的间距 */
+            flex-basis: calc(25% - 20px); /* 计算每个信息框的宽度 */
+            height: 200px;
+            width: 200px;
+            border-radius: 20px;
+            background-color: #79bfbe;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .info-title {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+        }
+    </style>
 </head>
 
 <body>
-    <div>
-        <h3>综合信息展示-暂时空着</h3>
+<div style="text-align: center;margin-bottom: 30px">
+    <h1>综合信息展示</h1>
+</div>
+
+<div class="info-container">
+    <div class="info-box">
+        <h2 class="info-title" style="color: #2a2a2a">资源数量</h2>
+        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${resourceNum}">1</span></h1>
     </div>
+
+    <div class="info-box">
+        <h2 class="info-title" style="color: #2a2a2a">例程数量</h2>
+        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${routineNum}">2</span></h1>
+    </div>
+
+    <div class="info-box">
+        <h2 class="info-title" style="color: #2a2a2a">执行次数</h2>
+        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${executeNum}">4</span></h1>
+    </div>
+
+    <div class="info-box">
+        <h2 class="info-title" style="color: #2a2a2a">成功次数</h2>
+        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${okNum}">3</span></h1>
+    </div>
+</div>
 
 </body>
 

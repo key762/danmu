@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 import skiree.host.danmu.dao.ExecuteMapper;
 import skiree.host.danmu.dao.LogMapper;
 import skiree.host.danmu.dao.ResourceMapper;
@@ -234,5 +235,12 @@ public class ExecuteService {
         QueryWrapper<Log> queryLogWrapper = new QueryWrapper<>();
         queryLogWrapper.eq("execute", id).orderByAsc("order_num");
         return new ResultData(200, "OK", logMapper.selectList(queryLogWrapper));
+    }
+
+    public void buildShow(Model model) {
+        model.addAttribute("resourceNum", resourceMapper.selectCount(null));
+        model.addAttribute("routineNum", routineMapper.selectCount(null));
+        model.addAttribute("executeNum", executeMapper.selectCount(null));
+        model.addAttribute("okNum", executeMapper.selectCount(new QueryWrapper<Execute>().eq("status","已成功")));
     }
 }
