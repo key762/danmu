@@ -68,8 +68,8 @@ layui.use(['table', 'dropdown'], function () {
             // },
             {
                 fixed: 'right', title: '操作',
-                width: 130,
-                minWidth: 120,
+                width: 165,
+                minWidth: 165,
                 toolbar: '#barDemo'
             }
         ]],
@@ -97,7 +97,7 @@ layui.use(['table', 'dropdown'], function () {
                 layer.open({
                     title: '新增例程',
                     type: 2,
-                    area: ['60%', '80%'],
+                    area: ['60%', '90%'],
                     content: '/routine/add.html',
                     fixed: false, // 不固定
                     maxmin: true,
@@ -205,7 +205,7 @@ layui.use(['table', 'dropdown'], function () {
             layer.open({
                 title: '编辑资源',
                 type: 2,
-                area: ['60%', '60%'],
+                area: ['60%', '95%'],
                 content: '/routine/update.html',
                 fixed: false, // 不固定
                 maxmin: true,
@@ -275,6 +275,26 @@ layui.use(['table', 'dropdown'], function () {
                     body.find('#routine-path').val(obj.data.resourcePath + obj.data.path);
 
                 }
+            });
+        } else if (obj.event === 'execute') {
+            layer.confirm('立即执行 [' + data.name + '] 么', function (index) {
+                // 向服务端发送删除指令
+                $.ajax({
+                    url: "/routine/execute/" + data.id, // 请求的URL
+                    type: 'GET', // 请求方法
+                    dataType: 'json', // 返回的数据格式
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.close(index);
+                            layer.msg(res.message, {time: 4000});
+                        } else {
+                            layer.msg(res.message);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('执行失败！');
+                    }
+                });
             });
         }
     });

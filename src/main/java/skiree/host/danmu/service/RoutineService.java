@@ -1,5 +1,6 @@
 package skiree.host.danmu.service;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,6 +13,7 @@ import skiree.host.danmu.model.Resource;
 import skiree.host.danmu.model.ResultData;
 import skiree.host.danmu.model.Routine;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,12 +36,15 @@ public class RoutineService {
         ResultData data = checkData(routine);
         if (data.status != 200) return data;
         routine.setId(uniqueId());
+        routine.setStart(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         routineMapper.insert(routine);
         return new ResultData(200, "OK");
     }
 
     public ResultData pageList(int page, int limit) {
-        Page<Routine> pageData = routineMapper.selectPage(new Page<>(page, limit), null);
+        QueryWrapper<Routine> queryRoutineWrapper = new QueryWrapper<>();
+        queryRoutineWrapper.orderByDesc("start");
+        Page<Routine> pageData = routineMapper.selectPage(new Page<>(page, limit), queryRoutineWrapper);
         List<Routine> records = pageData.getRecords();
         QueryWrapper<Resource> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("id", records.stream().map(Routine::getResource).toArray());
@@ -103,6 +108,7 @@ public class RoutineService {
         if (routineMapper.selectCount(wrapper) > 0) {
             return new ResultData(406, "此名称已存在!");
         }
+        routine.setStart(DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
         routineMapper.updateById(routine);
         return new ResultData(200, "OK");
     }

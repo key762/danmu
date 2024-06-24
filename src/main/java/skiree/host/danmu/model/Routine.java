@@ -12,18 +12,23 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Routine {
-    private String id;
-    private String name;
-    private String delmark;
-    private String rename;
-    private String source;
-    private String path;
-    private String resource;
+    public String id;
+    public String name;
+    public String delmark;
+    public String rename;
+    public String source;
     @TableField(exist = false)
-    private String resourceName;
+    public List<String> sources;
+    public String path;
     @TableField(exist = false)
-    private String resourcePath;
-    private String type;
+    public String fullPath;
+    public String resource;
+    @TableField(exist = false)
+    public String resourceName;
+    @TableField(exist = false)
+    public String resourcePath;
+    public String type;
+    public String start;
 
     public static String randomId() {
         return "RE" + RandomUtil.randomString(4).toUpperCase();

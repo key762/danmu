@@ -11,7 +11,10 @@
     <script th:src="@{/static/js/routine.js}"></script>
 </head>
 <body>
-<div style="margin-top: 40px;margin-left: 10px;margin-right: 10px;background-color: transparent;">
+<div style="text-align: center;margin-top: 5px">
+    <h1>例程管理</h1>
+</div>
+<div style="margin-top: 5px;margin-left: 10px;margin-right: 10px;background-color: transparent;">
     <div style="padding: 16px;background-color: white;">
         <table class="layui-hide" id="test" lay-filter="test"></table>
     </div>
@@ -27,6 +30,7 @@
     <div class="layui-clear-space">
         <a class="layui-btn layui-btn-xs" lay-event="delete">删除</a>
         <a class="layui-btn layui-btn-xs" lay-event="update">编辑</a>
+        <a class="layui-btn layui-btn-xs" lay-event="execute">执行</a>
     </div>
 </script>
 <script type="text/html" id="tranType">

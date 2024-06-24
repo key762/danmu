@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Resource {
-    private String id;
-    private String name;
-    private String path;
+    public String id;
+    public String name;
+    public String path;
+    public String start;
 
     public static String randomId() {
         return "DB" + RandomUtil.randomString(4).toUpperCase();

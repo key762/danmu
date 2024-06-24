@@ -1,18 +1,28 @@
 package skiree.host.danmu.service.core.vqq;
 
 import org.springframework.stereotype.Component;
+import skiree.host.danmu.model.TaskDo;
+import skiree.host.danmu.model.engine.DanMu;
 import skiree.host.danmu.service.core.Stratege;
-import skiree.host.danmu.model.task.Detail;
+
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class vQqProcess implements Stratege {
+
     @Override
-    public void doProcess(Detail detail) {
-        vQqEngine.doProcess(detail);
+    public Map<Integer, Object> idMap(TaskDo taskDo) {
+        return vQqEngine.idMap(taskDo.routine.sources);
     }
 
     @Override
-    public boolean supports(Detail detail) {
-        return detail.type.equalsIgnoreCase("vqq");
+    public Map<Long, List<DanMu>> getDanMu(Object object) {
+        return vQqAssEngine.getDanMu(object.toString());
+    }
+
+    @Override
+    public boolean supports(TaskDo taskDo) {
+        return taskDo.routine.type.equalsIgnoreCase("vqq");
     }
 }

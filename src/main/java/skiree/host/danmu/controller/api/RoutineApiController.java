@@ -3,8 +3,10 @@ package skiree.host.danmu.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import skiree.host.danmu.model.Execute;
 import skiree.host.danmu.model.ResultData;
 import skiree.host.danmu.model.Routine;
+import skiree.host.danmu.service.ExecuteService;
 import skiree.host.danmu.service.RoutineService;
 
 @Controller
@@ -13,6 +15,9 @@ public class RoutineApiController {
 
     @Autowired
     private RoutineService routineService;
+
+    @Autowired
+    private ExecuteService executeService;
 
     @PostMapping(value = "/routine/add")
     @ResponseBody
@@ -24,6 +29,14 @@ public class RoutineApiController {
     @ResponseBody
     public ResultData delete(@PathVariable("id") String id) {
         return routineService.deleteData(id);
+    }
+
+    @GetMapping("/routine/execute/{id}")
+    @ResponseBody
+    public ResultData execute(@PathVariable("id") String id) {
+        Execute execute = executeService.executeDoPre(id);
+        executeService.executeDo(execute);
+        return new ResultData(200, "执行编号: " + execute.getId() + " ");
     }
 
     @PostMapping(value = "/routine/update")

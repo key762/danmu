@@ -1,5 +1,6 @@
 package skiree.host.danmu.service;
 
+import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,7 @@ import skiree.host.danmu.model.Resource;
 import skiree.host.danmu.model.ResultData;
 import skiree.host.danmu.model.Routine;
 
-import java.util.List;
+import java.util.Date;
 
 @Service
 public class ResourceService {
@@ -24,7 +25,7 @@ public class ResourceService {
     public ResultData deleteData(String id) {
         QueryWrapper<Routine> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("resource", id);
-        if ( routineMapper.selectCount(queryWrapper) > 0 ) {
+        if (routineMapper.selectCount(queryWrapper) > 0) {
             return new ResultData(406, "资源已被例程使用!");
         }
         resourceMapper.deleteById(id);
@@ -32,7 +33,7 @@ public class ResourceService {
     }
 
     public ResultData saveData(String name, String path) {
-        resourceMapper.insert(new Resource(uniqueId(), name, path));
+        resourceMapper.insert(new Resource(uniqueId(), name, path, DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         return new ResultData(200, "OK");
     }
 
@@ -42,7 +43,7 @@ public class ResourceService {
         if (resourceMapper.selectCount(wrapper) > 0) {
             return new ResultData(406, "此名称或路径已存在!");
         }
-        resourceMapper.updateById(new Resource(id, name, path));
+        resourceMapper.updateById(new Resource(id, name, path, DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss")));
         return new ResultData(200, "OK");
     }
 
@@ -56,11 +57,15 @@ public class ResourceService {
     }
 
     public ResultData pageList(int page, int limit) {
-        return new ResultData(200, "OK", resourceMapper.selectPage(new Page<>(page, limit), null));
+        QueryWrapper<Resource> queryExecuteWrapper = new QueryWrapper<>();
+        queryExecuteWrapper.orderByDesc("start");
+        return new ResultData(200, "OK", resourceMapper.selectPage(new Page<>(page, limit), queryExecuteWrapper));
     }
 
     public ResultData selectData() {
-        return new ResultData(200, "OK", resourceMapper.selectList(null));
+        QueryWrapper<Resource> queryExecuteWrapper = new QueryWrapper<>();
+        queryExecuteWrapper.orderByDesc("start");
+        return new ResultData(200, "OK", resourceMapper.selectList(queryExecuteWrapper));
     }
 
     private String uniqueId() {
