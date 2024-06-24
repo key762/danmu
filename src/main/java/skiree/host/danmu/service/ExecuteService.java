@@ -230,4 +230,9 @@ public class ExecuteService {
         return uuid;
     }
 
+    public ResultData recordData(String id) {
+        QueryWrapper<Log> queryLogWrapper = new QueryWrapper<>();
+        queryLogWrapper.eq("execute", id).orderByAsc("order_num");
+        return new ResultData(200, "OK", logMapper.selectList(queryLogWrapper));
+    }
 }

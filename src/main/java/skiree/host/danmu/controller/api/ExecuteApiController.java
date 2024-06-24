@@ -15,8 +15,14 @@ public class ExecuteApiController {
 
     @GetMapping("/execute/delete/{id}")
     @ResponseBody
-    public ResultData execute(@PathVariable("id") String id) {
+    public ResultData delete(@PathVariable("id") String id) {
         return executeService.deleteData(id);
+    }
+
+    @GetMapping("/execute/record/{id}")
+    @ResponseBody
+    public ResultData record(@PathVariable("id") String id) {
+        return executeService.recordData(id);
     }
 
     @GetMapping("/execute/list")

@@ -132,6 +132,77 @@ layui.use(['table', 'dropdown'], function () {
                     }
                 });
             });
+        } else if (obj.event === 'record') {
+            $.ajax({
+                url: '/execute/record/' + data.id, // 详情数据接口
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                    if (res.status === 200) { // 假设返回的数据中包含状态码 code
+                        // var detailTableHtml = '<table class="layui-hide" id="detailTable" lay-filter="detailFilter"></table>';
+
+                        // var detailTableHtml = '<table class="layui-hide" id="detailTable" lay-filter="detailFilter"></table><button class="layui-btn refresh-btn">刷新</button>';
+
+                        var detailTableHtml = '<div class="refresh-btn-container"><button class="layui-btn layui-btn-sm refresh-btn" style="margin-top: 8px;margin-left: 8px;margin-bottom: 11px">刷新</button></div>' +
+                            '<table style="margin-left: 10px; margin-right: 10px" class="layui-hide" id="detailTable" lay-filter="detailFilter"></table>';
+
+                        // 在弹层中展示详情表格
+                        layer.open({
+                            type: 1,
+                            title: "用户详情",
+                            area: ['900px', '500px'], // 根据你的需要调整大小
+                            shadeClose: true,
+                            content: detailTableHtml,
+                            success: function (layero, index) {
+                                // 渲染详情表格
+                                renderDetailTable(res.data);
+                                // 为刷新按钮绑定点击事件
+                                layero.find('.refresh-btn').on('click', function(){
+                                    $.ajax({
+                                        url: '/execute/record/' + data.id, // 重新请求数据
+                                        type: 'get',
+                                        dataType: 'json',
+                                        success: function (newRes) {
+                                            if (newRes.status === 200) {
+                                                // 清除表格内容（如果需要，这里只是示例）
+                                                // 注意：如果你使用的是 layui 表格模块，你应该使用 table.reload 而不是直接操作 DOM
+                                                $('#detailTable').empty(); // 仅当直接操作 DOM 时使用
+                                                // 重新渲染表格
+                                                renderDetailTable(newRes.data);
+                                            } else {
+                                                layer.msg('刷新数据失败：' + newRes.msg);
+                                            }
+                                        },
+                                        error: function () {
+                                            layer.msg('刷新请求失败');
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    } else {
+                        layer.msg('获取详情失败：' + res.msg);
+                    }
+                }, error: function () {
+                    layer.msg('请求失败');
+                }
+            });
         }
     });
+
+    // 渲染详情表格的函数
+    function renderDetailTable(data) {
+        layui.use('table', function(){
+            var table = layui.table;
+            table.render({
+                elem: '#detailTable',
+                cols: [[
+                    { field: 'id', title: '日志编码', width: 130 },
+                    { field: 'content', title: '执行信息' },
+                    { field: 'time', title: '创建时间', width: 170 },
+                ]],
+                data: data
+            });
+        });
+    }
 });
