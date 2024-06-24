@@ -139,10 +139,6 @@ layui.use(['table', 'dropdown'], function () {
                 dataType: 'json',
                 success: function (res) {
                     if (res.status === 200) { // 假设返回的数据中包含状态码 code
-                        // var detailTableHtml = '<table class="layui-hide" id="detailTable" lay-filter="detailFilter"></table>';
-
-                        // var detailTableHtml = '<table class="layui-hide" id="detailTable" lay-filter="detailFilter"></table><button class="layui-btn refresh-btn">刷新</button>';
-
                         var detailTableHtml = '<div class="refresh-btn-container"><button class="layui-btn layui-btn-sm refresh-btn" style="margin-top: 8px;margin-left: 8px;margin-bottom: 11px">刷新</button></div>' +
                             '<table style="margin-left: 10px; margin-right: 10px" class="layui-hide" id="detailTable" lay-filter="detailFilter"></table>';
 
@@ -157,7 +153,7 @@ layui.use(['table', 'dropdown'], function () {
                                 // 渲染详情表格
                                 renderDetailTable(res.data);
                                 // 为刷新按钮绑定点击事件
-                                layero.find('.refresh-btn').on('click', function(){
+                                layero.find('.refresh-btn').on('click', function () {
                                     $.ajax({
                                         url: '/execute/record/' + data.id, // 重新请求数据
                                         type: 'get',
@@ -192,14 +188,14 @@ layui.use(['table', 'dropdown'], function () {
 
     // 渲染详情表格的函数
     function renderDetailTable(data) {
-        layui.use('table', function(){
+        layui.use('table', function () {
             var table = layui.table;
             table.render({
                 elem: '#detailTable',
                 cols: [[
-                    { field: 'id', title: '日志编码', width: 130 },
-                    { field: 'content', title: '执行信息' },
-                    { field: 'time', title: '创建时间', width: 170 },
+                    {field: 'id', title: '日志编码', width: 130},
+                    {field: 'content', title: '执行信息'},
+                    {field: 'time', title: '创建时间', width: 170},
                 ]],
                 data: data
             });
