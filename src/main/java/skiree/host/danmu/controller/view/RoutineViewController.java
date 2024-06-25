@@ -16,12 +16,12 @@ public class RoutineViewController {
 
     @GetMapping("/routine/add.html")
     public String routineAdd() {
-        return checkLogin("/routine/add");
+        return checkLogin("routine/add");
     }
 
     @GetMapping("/routine/update.html")
     public String routineUpdate() {
-        return checkLogin("/routine/update");
+        return checkLogin("routine/update");
     }
 
     private String checkLogin(String target) {

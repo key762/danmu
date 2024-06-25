@@ -30,11 +30,8 @@ server:
 spring:
   thymeleaf:
     cache: false
-    check-template: true
-    check-template-location: true
     enabled: true
     encoding: UTF-8
-    excluded-view-names:
     mode: HTML5
     prefix: classpath:/templates/
     suffix: .html
@@ -42,8 +39,8 @@ spring:
     static-path-pattern: /static/**
   datasource:
     driver-class-name: org.sqlite.JDBC
-#    url: jdbc:sqlite::resource:db/danmu.db #生产环境
-    url: jdbc:sqlite:src/main/resources/db/danmu.db #开发环境
+    url: jdbc:sqlite::resource:db/danmu.db #生产环境
+    #    url: jdbc:sqlite:src/main/resources/db/danmu.db #开发环境
     type: com.alibaba.druid.pool.DruidDataSource
     druid:
       validation-query: select 1

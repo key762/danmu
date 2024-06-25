@@ -16,12 +16,12 @@ public class ResourceViewController {
 
     @GetMapping("/resource/add.html")
     public String resourceAdd() {
-        return checkLogin("/resource/add");
+        return checkLogin("resource/add");
     }
 
     @GetMapping("/resource/update.html")
     public String resourceUpdate() {
-        return checkLogin("/resource/update");
+        return checkLogin("resource/update");
     }
 
     private String checkLogin(String target) {

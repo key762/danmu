@@ -14,16 +14,6 @@ public class ExecuteViewController {
         return checkLogin("execute");
     }
 
-    @GetMapping("/execute/add.html")
-    public String executeAdd() {
-        return checkLogin("/execute/add");
-    }
-
-    @GetMapping("/execute/update.html")
-    public String executeUpdate() {
-        return checkLogin("/execute/update");
-    }
-
     private String checkLogin(String target) {
         if (StpUtil.isLogin()) {
             return target;

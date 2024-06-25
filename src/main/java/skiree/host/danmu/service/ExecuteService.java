@@ -147,7 +147,7 @@ public class ExecuteService {
                 FileUtil.del(filePath);
             }
             FileUtil.writeLines(temp, filePath, "UTF-8");
-            logService.recordLog(taskDo, "弹幕处理完成,已转载弹幕[" + danMuColl.size() + "],视频弹幕名称[" + assPath + "]");
+            logService.recordLog(taskDo, "弹幕处理完成,装载弹幕[" + danMuColl.size() + "]条,弹幕文件名[" + assPath + "].ass");
         });
     }
 

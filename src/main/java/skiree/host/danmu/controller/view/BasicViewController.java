@@ -49,7 +49,7 @@ public class BasicViewController {
             StpUtil.login("Admin");
             return "redirect:/home";
         }
-        return "loginFailed";
+        return "redirect:/login";
     }
 
     @GetMapping("/show.html")
