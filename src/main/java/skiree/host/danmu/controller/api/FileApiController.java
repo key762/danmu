@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @CrossOrigin
@@ -15,6 +17,11 @@ public class FileApiController {
     @GetMapping("/top-folders")
     @ResponseBody
     public List<String> getTopFolders() {
+        if (FileUtil.isWindows()){
+            return Arrays.stream(File.listRoots())
+                    .map(File::getAbsolutePath)
+                    .collect(Collectors.toList());
+        }
         File rootDir = new File(File.separator);
         return getSubFolders(rootDir);
     }
