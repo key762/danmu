@@ -7,11 +7,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import skiree.host.danmu.dao.ExecuteMapper;
+import skiree.host.danmu.dao.LogMapper;
 import skiree.host.danmu.dao.ResourceMapper;
 import skiree.host.danmu.dao.RoutineMapper;
-import skiree.host.danmu.model.Resource;
-import skiree.host.danmu.model.ResultData;
-import skiree.host.danmu.model.Routine;
+import skiree.host.danmu.model.*;
 
 import java.util.Date;
 import java.util.List;
@@ -27,8 +27,23 @@ public class RoutineService {
     @Autowired
     private ResourceMapper resourceMapper;
 
+    @Autowired
+    private ExecuteMapper executeMapper;
+
+    @Autowired
+    private LogMapper logMapper;
+
     public ResultData deleteData(String id) {
         routineMapper.deleteById(id);
+        QueryWrapper<Execute> queryExecuteWrapper = new QueryWrapper<>();
+        queryExecuteWrapper.eq("routine", id);
+        List<Execute> executes = executeMapper.selectList(queryExecuteWrapper);
+        for (Execute execute : executes) {
+            QueryWrapper<Log> queryLogWrapper = new QueryWrapper<>();
+            queryLogWrapper.eq("execute", execute.getId());
+            logMapper.delete(queryLogWrapper);
+        }
+        executeMapper.delete(queryExecuteWrapper);
         return new ResultData(200, "OK");
     }
 

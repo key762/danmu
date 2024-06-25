@@ -3,7 +3,7 @@ layui.use(['table', 'dropdown'], function () {
     var dropdown = layui.dropdown;
     // 创建渲染实例
     table.render({
-        title: '例程文件',
+        title: '执行文件',
         elem: '#test',
         url: '/execute/list',
         toolbar: '#toolbarDemo',
@@ -145,7 +145,7 @@ layui.use(['table', 'dropdown'], function () {
                         // 在弹层中展示详情表格
                         layer.open({
                             type: 1,
-                            title: "用户详情",
+                            title: "执行详情",
                             area: ['900px', '500px'], // 根据你的需要调整大小
                             shadeClose: true,
                             content: detailTableHtml,

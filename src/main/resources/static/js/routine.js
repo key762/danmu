@@ -203,7 +203,7 @@ layui.use(['table', 'dropdown'], function () {
         } else if (obj.event === 'update') {
             // 编辑
             layer.open({
-                title: '编辑资源',
+                title: '编辑例程',
                 type: 2,
                 area: ['60%', '95%'],
                 content: '/routine/update.html',
