@@ -3,11 +3,11 @@ package skiree.host.danmu.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import skiree.host.danmu.model.Execute;
-import skiree.host.danmu.model.ResultData;
-import skiree.host.danmu.model.Routine;
-import skiree.host.danmu.service.ExecuteService;
-import skiree.host.danmu.service.RoutineService;
+import skiree.host.danmu.model.base.Execute;
+import skiree.host.danmu.model.base.ResultData;
+import skiree.host.danmu.model.base.Routine;
+import skiree.host.danmu.service.base.ExecuteService;
+import skiree.host.danmu.service.base.RoutineService;
 
 @Controller
 @CrossOrigin
@@ -43,12 +43,6 @@ public class RoutineApiController {
     @ResponseBody
     public ResultData update(@RequestBody Routine routine) {
         return routineService.updateData(routine);
-    }
-
-    @PostMapping(value = "/routine/check")
-    @ResponseBody
-    public ResultData check(@RequestBody Routine routine) {
-        return routineService.checkData(routine);
     }
 
     @GetMapping("/routine/list")

@@ -85,40 +85,27 @@ layui.use(['table', 'dropdown'], function () {
                     btnAlign: 'c',
                     yes: function (index, layero) {
                         var iframeWin = window[layero.find('iframe')[0]['name']];
+                        // 获取输入数据
                         var elemName = iframeWin.$('#resource-name');
                         var elemPath = iframeWin.$('#resource-path');
                         var name = elemName.val();
                         var path = elemPath.val();
+                        // 空值检查
                         if ($.trim(name) === '') return elemName.focus();
-                        if ($.trim(path) === '') return elemName.focus();
-                        // 显示获得的值
+                        if ($.trim(path) === '') return elemPath.focus();
+                        // 调取新增
                         $.ajax({
-                            url: "/resource/check", // 请求的URL
+                            url: "/resource/add", // 请求的URL
                             type: 'POST', // 请求方法
                             dataType: 'json', // 返回的数据格式
                             data: {"name": name, "path": path},
                             success: function (res) {
                                 if (res.status === 200) {
-                                    $.ajax({
-                                        url: "/resource/add", // 请求的URL
-                                        type: 'POST', // 请求方法
-                                        dataType: 'json', // 返回的数据格式
-                                        data: {"name": name, "path": path},
-                                        success: function (res) {
-                                            layer.close(index);
-                                            table.reload('test', {where: {},});
-                                            layer.msg('新增成功！');
-                                        },
-                                        error: function () {
-                                            layer.msg('新增失败！');
-                                        }
-                                    });
-                                    table.reload('test', {where: {},});
-                                    // 关闭弹层
                                     layer.close(index);
+                                    table.reload('test', {where: {},});
+                                    layer.msg('新增成功！');
                                 } else {
                                     layer.msg(res.message);
-                                    elemName.focus()
                                 }
                             },
                             error: function () {
@@ -161,6 +148,26 @@ layui.use(['table', 'dropdown'], function () {
                     }
                 });
             });
+        } else if (obj.event === 'analysis') {
+            layer.confirm('真的解析 [' + data.name + '] 么', function (index) {
+                // 向服务端发送删除指令
+                $.ajax({
+                    url: "/resource/analysis/" + data.id, // 请求的URL
+                    type: 'GET', // 请求方法
+                    dataType: 'json', // 返回的数据格式
+                    success: function (res) {
+                        if (res.status === 200) {
+                            layer.close(index);
+                            layer.msg('资源解析中！');
+                        } else {
+                            layer.msg(res.message);
+                        }
+                    },
+                    error: function () {
+                        layer.msg('解析失败！');
+                    }
+                });
+            });
         } else if (obj.event === 'update') {
             // 编辑
             layer.open({
@@ -182,13 +189,13 @@ layui.use(['table', 'dropdown'], function () {
                     var name = elemName.val();
                     var path = elemPath.val();
                     if ($.trim(name) === '') return elemName.focus();
-                    if ($.trim(path) === '') return elemName.focus();
+                    if ($.trim(path) === '') return elemPath.focus();
                     // 显示获得的值
                     $.ajax({
                         url: "/resource/update", // 请求的URL
                         type: 'POST', // 请求方法
                         dataType: 'json', // 返回的数据格式
-                        data: {"id": id, "name": name, "path": path},
+                        data: {"id": id, "name": name},
                         success: function (res) {
                             if (res.status === 200) {
                                 layer.close(index);
@@ -206,10 +213,6 @@ layui.use(['table', 'dropdown'], function () {
                 },
                 success: function (layero, index, that) {
                     let body = layer.getChildFrame('body', index);
-                    //得到iframe页的窗口对象
-                    var iframeWin = window[layero.find('iframe')[0]['name']];
-                    //执行iframe页的showMsg方法
-                    iframeWin.loadSubFolders(obj.data.path);
                     body.find('#resource-id').val(obj.data.id);
                     body.find('#resource-name').val(obj.data.name);
                     body.find('#resource-path').val(obj.data.path);

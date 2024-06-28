@@ -25,7 +25,9 @@ import java.util.regex.Pattern;
 
 public class iQiYiAssEngine {
 
-    public static Map<Long, List<DanMu>> getDanMu(Node node) {
+    public static Map<Long, List<DanMu>> getDanMu(String url) {
+        Node node = new Node();
+        node.setUrl(url);
         Map<Long, List<DanMu>> res = new HashMap<>();
         while (node.getDuration() == null || node.getId() == null) {
             try {

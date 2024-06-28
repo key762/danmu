@@ -156,7 +156,7 @@
                 <artifactId>classfinal-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <password>anorak</password><!--加密打包之后pom.xml会被删除，不用担心在jar包里找到此密码-->
+                    <password>#</password><!--加密打包之后pom.xml会被删除，不用担心在jar包里找到此密码-->
                     <packages>skiree.host.danmu</packages>
                     <cfgfiles>application.yml</cfgfiles>
                 </configuration>

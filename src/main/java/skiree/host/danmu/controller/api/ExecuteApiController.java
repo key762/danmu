@@ -3,8 +3,8 @@ package skiree.host.danmu.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import skiree.host.danmu.model.ResultData;
-import skiree.host.danmu.service.ExecuteService;
+import skiree.host.danmu.model.base.ResultData;
+import skiree.host.danmu.service.base.ExecuteService;
 
 @Controller
 @CrossOrigin

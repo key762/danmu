@@ -28,7 +28,7 @@
         }
 
         .layui-input-block-input {
-            font-size: 20px;
+            font-size: 14px;
             width: 100%;
             height: 30px;
         }
@@ -75,21 +75,21 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">平台</label>
+        <label class="layui-form-label">剧季</label>
         <div class="layui-input-block">
-            <select class="type-select" id="routine-type">
-                <option value="vqq">腾讯视频</option>
-                <option value="iqiyi">爱奇艺视频</option>
-            </select>
+            <input id="routine-season" type="text" class="layui-input-block-input">
         </div>
     </div>
-    <div id="add-text">
-        <div class="layui-form-item">
-            <label class="layui-form-label">播源</label>
-            <div class="layui-input-block">
-                <input class="folder-select-style" type="text" name="data[]" />
-                <button style="height: 30px" onclick="addRow()">续源</button>
-            </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">TMDB</label>
+        <div class="layui-input-block">
+            <input id="routine-tmdb" type="text" class="layui-input-block-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">豆瓣</label>
+        <div class="layui-input-block">
+            <input id="routine-douban" type="text" class="layui-input-block-input">
         </div>
     </div>
     <div class="layui-form-item">
@@ -105,157 +105,12 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">资源</label>
-        <div class="layui-input-block">
-            <select class="type-select" id="routine-select" onchange="loadResourcePath(this.value)">
-            </select>
-        </div>
-    </div>
-    <div class="layui-form-item">
         <label class="layui-form-label">路径</label>
         <div class="layui-input-block">
-            <input id="routine-path" type="text" class="layui-input-block-input" readonly disabled>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">选择</label>
-        <div class="layui-input-block">
-            <select id="folder-select" class="folder-select-style" onchange="loadSubFolders(this.value)">
-                <option value="">选择</option>
-            </select>
-            <button id="back-button" onclick="navigateUp()">返回</button>
+            <input id="routine-path" type="text" class="layui-input-block-input">
         </div>
     </div>
 </div>
 
-
-<script type="text/javascript" th:inline="javascript">
-    var basePath = [[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]];
-    var currentPath = "/";
-    var resourceMap = new Map();
-
-    $(document).ready(function () {
-        loadResourceFolders();
-    });
-
-    function loadResourceFolders() {
-        $.ajax({
-            url: basePath + "/resource/select",
-            type: "GET",
-            success: function (data) {
-                var resourceSelect = $("#routine-select");
-                resourceSelect.empty();
-                resourceSelect.append($("<option>").val("").text("选择资源"));
-                $.each(data.data, function (index, folder) {
-                    resourceSelect.append($("<option>").val(folder.id).text(folder.name));
-                    resourceMap.set(folder.id, folder.path);
-                });
-            },
-            error: function () {
-                $("#routine-select").append($("<option>").text("无法获取资源列表"));
-            }
-        });
-    }
-
-    function loadResourcePath(resourceId) {
-        if (resourceId !== "") {
-            currentPath = resourceMap.get(resourceId);
-            updatePathNav(currentPath);
-            $.ajax({
-                url: basePath + "/folders",
-                type: "POST",
-                data: JSON.stringify(currentPath),
-                contentType: "application/json; charset=utf-8",
-                success: function (data) {
-                    var folderSelect = $("#folder-select");
-                    folderSelect.empty();
-                    folderSelect.append($("<option>").val("").text("选择文件夹"));
-                    $.each(data, function (index, folder) {
-                        folderSelect.append($("<option>").val(folder).text(folder.substring(folder.lastIndexOf("/") + 1)));
-                    });
-                },
-                error: function () {
-                    $("#folder-select").append($("<option>").text("无法获取文件夹列表"));
-                }
-            });
-        }
-    }
-
-    function loadSubFolders(folderPath) {
-        if (folderPath) {
-            currentPath = folderPath;
-            updatePathNav(currentPath);
-            $.ajax({
-                url: basePath + "/folders",
-                type: "POST",
-                data: JSON.stringify(folderPath),
-                contentType: "application/json; charset=utf-8",
-                success: function (data) {
-                    var folderSelect = $("#folder-select");
-                    folderSelect.empty();
-                    folderSelect.append($("<option>").val("").text("选择文件夹"));
-                    $.each(data, function (index, folder) {
-                        folderSelect.append($("<option>").val(folder).text(folder.substring(folder.lastIndexOf("/") + 1)));
-                    });
-                },
-                error: function () {
-                    $("#folder-select").append($("<option>").text("无法获取文件夹列表"));
-                }
-            });
-        } else {
-            currentPath = "/";
-            updatePathNav(currentPath);
-            $("#folder-select").empty();
-            $("#folder-select").append($("<option>").val("").text("选择文件夹"));
-        }
-    }
-
-    function navigateUp() {
-        var lastSlashIndex = currentPath.lastIndexOf("/");
-        if (lastSlashIndex > 0) {
-            currentPath = currentPath.substring(0, lastSlashIndex);
-            updatePathNav(currentPath);
-            loadSubFolders(currentPath);
-        } else {
-            currentPath = "/";
-            updatePathNav(currentPath);
-        }
-    }
-
-    function updatePathNav(path) {
-        document.getElementById('routine-path').value = path;
-        if (path === "/") {
-            $("#back-button").prop("disabled", true);
-        } else {
-            $("#back-button").prop("disabled", false);
-        }
-    }
-
-    function addRow() {
-        const container = document.getElementById("add-text");
-        const newRow = document.createElement("div");
-        newRow.className = "layui-form-item";
-        newRow.innerHTML = `<label class="layui-form-label">    </label>
-            <div class="layui-input-block">
-                <input class="folder-select-style" type="text" name="data[]"/>
-                <button style="height: 30px" onClick="removeRow(this)">删源</button>
-            </div>`;
-        container.appendChild(newRow);
-    }
-
-    function removeRow(button) {
-        const row = button.parentNode;
-        row.parentNode.parentNode.removeChild(row.parentNode);
-    }
-
-    // function submitForm(event) {
-    //     event.preventDefault(); // 阻止表单的默认提交行为
-    //
-    //     const form = document.getElementById("myForm");
-    //     const inputs = form.querySelectorAll('input[name="data[]"]');
-    //     const dataArray = Array.from(inputs).map(input => input.value);
-    //     console.log(dataArray);
-    // }
-</script>
 </body>
 </html>

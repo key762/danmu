@@ -21,7 +21,7 @@ public class DanMu {
     private BigDecimal score;
 
     public String getStyle() {
-        if (!this.style.isEmpty()) {
+        if (this.style !=null && !this.style.isEmpty()) {
             if (this.style.contains("gradient_colors")) {
                 JSONArray jsonArray = JSONUtil.parseArray(JSONUtil.parse(this.style).getByPath("gradient_colors").toString());
                 long endTime = (long) (1920.0 * AssConf.speed);
@@ -37,6 +37,7 @@ public class DanMu {
                 return "{\\c&H" + StringUtils.reverse(this.style) + "}";
             }
         }
+        if (this.style == null) return "";
         return style;
     }
 

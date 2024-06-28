@@ -1,5 +1,6 @@
 package skiree.host.danmu.util.config;
 
+import cn.hutool.core.io.FileUtil;
 import com.alibaba.druid.pool.DruidDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +23,11 @@ public class DataSourceConfig {
     public DataSource getDataSource() {
         DruidDataSource dataSource = new DruidDataSource();
         try {
-            String dbPath = System.getProperty("user.dir") + "/".replace("file:/", "/") + "/danmu.db";
+            String basePath = System.getProperty("user.dir") + "/".replace("file:/", "/") + "/db";
+            String dbPath = basePath + "/danmu.db";
             Path databaseFile = Paths.get(dbPath);
             if (!Files.exists(databaseFile)) {
+                FileUtil.mkdir(basePath);
                 Files.copy(databaseResource.getInputStream(), databaseFile, StandardCopyOption.REPLACE_EXISTING);
             }
             dataSource.setUrl("jdbc:sqlite:" + dbPath);

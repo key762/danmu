@@ -3,8 +3,8 @@ package skiree.host.danmu.controller.api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import skiree.host.danmu.model.ResultData;
-import skiree.host.danmu.service.ResourceService;
+import skiree.host.danmu.model.base.ResultData;
+import skiree.host.danmu.service.base.ResourceService;
 
 @Controller
 @CrossOrigin
@@ -25,28 +25,23 @@ public class ResourceApiController {
         return resourceService.deleteData(id);
     }
 
-    @PostMapping(value = "/resource/update")
+    @GetMapping("/resource/analysis/{id}")
     @ResponseBody
-    public ResultData check(@RequestParam("id") String id, @RequestParam("name") String name, @RequestParam("path") String path) {
-        return resourceService.updateData(id, name, path);
+    public ResultData analysis(@PathVariable("id") String id) {
+        resourceService.analysisData(id);
+        return new ResultData(200, "OK");
     }
 
-    @PostMapping(value = "/resource/check")
+    @PostMapping(value = "/resource/update")
     @ResponseBody
-    public ResultData check(@RequestParam("name") String name, @RequestParam("path") String path) {
-        return resourceService.checkData(name, path);
+    public ResultData check(@RequestParam("id") String id, @RequestParam("name") String name) {
+        return resourceService.updateData(id, name);
     }
 
     @GetMapping("/resource/list")
     @ResponseBody
     public ResultData list(@RequestParam("page") int page, @RequestParam("limit") int limit) {
         return resourceService.pageList(page, limit);
-    }
-
-    @GetMapping("/resource/select")
-    @ResponseBody
-    public ResultData select() {
-        return resourceService.selectData();
     }
 
 }

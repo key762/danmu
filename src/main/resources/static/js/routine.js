@@ -42,30 +42,31 @@ layui.use(['table', 'dropdown'], function () {
                 title: '名称'
             },
             {
-                field: 'type',
-                title: '平台',
-                templet: '#tranType'
-            },
-            {
                 field: 'resourceName',
                 title: '资源'
             },
-            // {
-            //     field: 'source',
-            //     title: '播源'
-            // },
             {
                 field: 'rename',
                 title: '重名'
             },
             {
-                field: 'delmark',
-                title: '删标'
+                field: 'season',
+                title: '剧季'
             },
-            // {
-            //     field: 'path',
-            //     title: '路径'
-            // },
+            {
+                field: 'tmdbId',
+                templet: function (d) {
+                    return '<a style="color: #47bad6" href="https://www.themoviedb.org/tv/' + d.tmdbId + '/season/' + d.season + '">' + d.tmdbId + '</a>';
+                },
+                title: 'TMDB链接'
+            },
+            {
+                field: 'doubanId',
+                templet: function (d) {
+                    return '<a style="color: #47bad6" href="https://movie.douban.com/subject/' + d.doubanId + '/">' + d.doubanId + '</a>';
+                },
+                title: '豆瓣链接'
+            },
             {
                 fixed: 'right', title: '操作',
                 width: 165,
@@ -107,54 +108,38 @@ layui.use(['table', 'dropdown'], function () {
                     yes: function (index, layero) {
                         var iframeWin = window[layero.find('iframe')[0]['name']];
                         var elemName = iframeWin.$('#routine-name').val();
-                        var elemType = iframeWin.$('#routine-type').val();
-                        const elemSource = Array.from(iframeWin.$('#add-text input')).map(input => input.value);
+                        var elemSeason = iframeWin.$('#routine-season').val();
+                        var elemTmdb = iframeWin.$('#routine-tmdb').val();
+                        var elemDouban = iframeWin.$('#routine-douban').val();
                         var elemRename = iframeWin.$('#routine-rename').val();
                         var elemDelmark = iframeWin.$('#routine-delmark').val();
-                        var elemResource = iframeWin.$('#routine-select').val();
                         var elemPath = iframeWin.$('#routine-path').val();
                         if ($.trim(elemName) === '') return iframeWin.$('#routine-name').focus();
+                        if ($.trim(elemSeason) === '') return iframeWin.$('#routine-season').focus();
+                        if ($.trim(elemTmdb) === '') return iframeWin.$('#routine-tmdb').focus();
+                        if ($.trim(elemDouban) === '') return iframeWin.$('#routine-douban').focus();
                         if ($.trim(elemRename) === '') return iframeWin.$('#routine-rename').focus();
-                        if ($.trim(elemResource) === '') return iframeWin.$('#routine-select').focus();
+                        if ($.trim(elemPath) === '') return iframeWin.$('#routine-path').focus();
                         // 显示获得的值
                         $.ajax({
-                            url: "/routine/check", // 请求的URL
+                            url: "/routine/add", // 请求的URL
                             type: 'POST', // 请求方法
                             contentType: 'application/json',
                             dataType: 'json', // 返回的数据格式
                             data: JSON.stringify({
-                                "name": elemName, "delmark": elemDelmark, "rename": elemRename,
-                                "source": JSON.stringify(elemSource), "path": elemPath, "resource": elemResource,
-                                "type": elemType,
+                                "name": elemName,
+                                "season": elemSeason,
+                                "tmdbId": elemTmdb,
+                                "doubanId": elemDouban,
+                                "rename": elemRename,
+                                "delmark": elemDelmark,
+                                "path": elemPath
                             }),
                             success: function (res) {
                                 if (res.status === 200) {
-                                    $.ajax({
-                                        url: "/routine/add", // 请求的URL
-                                        type: 'POST', // 请求方法
-                                        contentType: 'application/json',
-                                        dataType: 'json', // 返回的数据格式
-                                        data: JSON.stringify({
-                                            "name": elemName,
-                                            "delmark": elemDelmark,
-                                            "rename": elemRename,
-                                            "source": JSON.stringify(elemSource),
-                                            "path": elemPath,
-                                            "resource": elemResource,
-                                            "type": elemType,
-                                        }),
-                                        success: function (res) {
-                                            layer.close(index);
-                                            table.reload('test', {where: {},});
-                                            layer.msg('新增成功！');
-                                        },
-                                        error: function () {
-                                            layer.msg('新增失败！');
-                                        }
-                                    });
-                                    table.reload('test', {where: {},});
-                                    // 关闭弹层
                                     layer.close(index);
+                                    table.reload('test', {where: {},});
+                                    layer.msg('新增成功！')
                                 } else {
                                     layer.msg(res.message);
                                     elemName.focus()
@@ -216,15 +201,16 @@ layui.use(['table', 'dropdown'], function () {
                     var iframeWin = window[layero.find('iframe')[0]['name']];
                     var elemId = iframeWin.$('#routine-id').val();
                     var elemName = iframeWin.$('#routine-name').val();
-                    var elemType = iframeWin.$('#routine-type').val();
-                    const elemSource = Array.from(iframeWin.$('#add-text input')).map(input => input.value);
+                    var elemSeason = iframeWin.$('#routine-season').val();
+                    var elemTmdb = iframeWin.$('#routine-tmdb').val();
+                    var elemDouban = iframeWin.$('#routine-douban').val();
                     var elemRename = iframeWin.$('#routine-rename').val();
                     var elemDelmark = iframeWin.$('#routine-delmark').val();
-                    var elemResource = iframeWin.$('#routine-select').val();
-                    var elemPath = iframeWin.$('#routine-path').val();
                     if ($.trim(elemName) === '') return iframeWin.$('#routine-name').focus();
+                    if ($.trim(elemSeason) === '') return iframeWin.$('#routine-season').focus();
+                    if ($.trim(elemTmdb) === '') return iframeWin.$('#routine-tmdb').focus();
+                    if ($.trim(elemDouban) === '') return iframeWin.$('#routine-douban').focus();
                     if ($.trim(elemRename) === '') return iframeWin.$('#routine-rename').focus();
-                    if ($.trim(elemResource) === '') return iframeWin.$('#routine-select').focus();
                     // 显示获得的值
                     $.ajax({
                         url: "/routine/update", // 请求的URL
@@ -232,9 +218,13 @@ layui.use(['table', 'dropdown'], function () {
                         contentType: 'application/json',
                         dataType: 'json', // 返回的数据格式
                         data: JSON.stringify({
-                            "id": elemId, "name": elemName, "delmark": elemDelmark, "rename": elemRename,
-                            "source": JSON.stringify(elemSource), "path": elemPath, "resource": elemResource,
-                            "type": elemType,
+                            "id": elemId,
+                            "name": elemName,
+                            "season": elemSeason,
+                            "tmdbId": elemTmdb,
+                            "doubanId": elemDouban,
+                            "rename": elemRename,
+                            "delmark": elemDelmark
                         }),
                         success: function (res) {
                             if (res.status === 200) {
@@ -253,27 +243,15 @@ layui.use(['table', 'dropdown'], function () {
                 },
                 success: function (layero, index, that) {
                     let body = layer.getChildFrame('body', index);
-                    //得到iframe页的窗口对象
-                    var iframeWin = window[layero.find('iframe')[0]['name']];
-                    //执行iframe页的showMsg方法
-                    iframeWin.loadSubFolders(obj.data.resourcePath + obj.data.path);
                     body.find('#routine-id').val(obj.data.id);
                     body.find('#routine-name').val(obj.data.name);
-                    body.find('#routine-type').val(obj.data.type);
-                    let sourceArray = JSON.parse(obj.data.source);
-                    sourceArray.forEach((element, index) => {
-                        var sourceStr = sourceArray[index];
-                        if (index === 0) {
-                            body.find('input.folder-select-style[name="data[]"]').val(sourceStr);
-                        } else {
-                            iframeWin.addRowStr(sourceStr);
-                        }
-                    });
+                    body.find('#routine-resourceName').val(obj.data.resourceName);
+                    body.find('#routine-season').val(obj.data.season);
+                    body.find('#routine-tmdb').val(obj.data.tmdbId);
+                    body.find('#routine-douban').val(obj.data.doubanId);
                     body.find('#routine-rename').val(obj.data.rename);
                     body.find('#routine-delmark').val(obj.data.delmark);
-                    body.find('#routine-select').val(obj.data.resource);
-                    body.find('#routine-path').val(obj.data.resourcePath + obj.data.path);
-
+                    body.find('#routine-path').val(obj.data.path);
                 }
             });
         } else if (obj.event === 'execute') {

@@ -1,4 +1,4 @@
-package skiree.host.danmu.model;
+package skiree.host.danmu.model.base;
 
 import cn.hutool.core.util.RandomUtil;
 import lombok.AllArgsConstructor;
