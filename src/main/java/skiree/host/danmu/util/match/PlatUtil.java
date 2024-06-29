@@ -27,8 +27,8 @@ public class PlatUtil {
             if (url.contains("v.youku.com")) {
                 return "优酷视频";
             }
-            if (url.contains("www.bilibili.com")) {
-                return "bilibili";
+            if (url.contains("bilibili.com")) {
+                return "Bilibili";
             }
         }
         return url;

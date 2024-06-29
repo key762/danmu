@@ -88,8 +88,6 @@ public class iQiYiAssEngine {
                     res.put(offset, list);
                 }
             }
-        } catch (IOException e) {
-            System.out.println("Error occurred: " + e.getMessage());
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
         }
