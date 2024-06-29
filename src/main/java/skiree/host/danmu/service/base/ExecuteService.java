@@ -25,10 +25,12 @@ import skiree.host.danmu.model.tmdb.SeasonPath;
 import skiree.host.danmu.model.tmdb.TvPath;
 import skiree.host.danmu.service.core.Stratege;
 import skiree.host.danmu.service.tmdb.TMDBService;
+import skiree.host.danmu.util.match.PlatUtil;
 import skiree.host.danmu.util.substitutor.CustomSubstitutor;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -102,12 +104,16 @@ public class ExecuteService extends BaseService {
             execute.setEnd(nowTime());
             executeMapper.updateById(execute);
             // 准备执行了
-            doBullet(taskDo);
+            boolean mark = doBullet(taskDo);
             // 执行结束了
-            logService.recordLog(taskDo, "执行结束");
-            execute.setStatus("已成功");
+            if (mark) {
+                execute.setStatus("已成功");
+                logService.recordLog(taskDo, "执行结束");
+            } else {
+                execute.setStatus("已失败");
+                logService.recordLog(taskDo, "执行失败");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
             logService.recordLog(taskDo, "执行失败");
             execute.setStatus("已失败");
             execute.setEnd(nowTime());
@@ -118,7 +124,8 @@ public class ExecuteService extends BaseService {
         }
     }
 
-    private synchronized void doBullet(TaskDo taskDo) {
+    private synchronized boolean doBullet(TaskDo taskDo) {
+        AtomicBoolean mark = new AtomicBoolean(true);
         // 状态更新
         taskDo.execute.setStatus("执行中");
         taskDo.execute.setEnd(nowTime());
@@ -128,28 +135,39 @@ public class ExecuteService extends BaseService {
         // 统计本地的视频文件
         Map<Integer, String> idName = tmdbFileMap(taskDo);
         if (idName.isEmpty()) {
+            mark.set(false);
             logService.recordLog(taskDo, "TMDB集数统计数量为[0],执行结束");
-            return;
+            return mark.get();
         }
         logService.recordLog(taskDo, "TMDB集数统计数量为[" + idName.size() + "]");
         // 统计弹幕平台的视频信息
         Map<Integer, String> idMap = doubanFileMap(taskDo);
         if (idMap.isEmpty()) {
-            logService.recordLog(taskDo, "弹幕平台视频数量为[0],执行结束");
-            return;
+            mark.set(false);
+            logService.recordLog(taskDo, "豆瓣集数统计为[0],执行结束");
+            return mark.get();
         }
-        logService.recordLog(taskDo, "弹幕平台视频数量为[" + idMap.size() + "]");
+        logService.recordLog(taskDo, "豆瓣集数统计为[" + idMap.size() + "]");
         // 计算本地视频和弹幕平台视频的交集
         Map<Integer, String> jobMap = idMap.entrySet().stream()
                 .filter(entry -> idName.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         if (jobMap.isEmpty()) {
-            logService.recordLog(taskDo, "符合弹幕抓取的视频数量为[0],执行结束");
-            return;
+            mark.set(false);
+            logService.recordLog(taskDo, "符合匹配集数为[0],执行结束");
+            return mark.get();
         }
-        logService.recordLog(taskDo, "符合弹幕抓取的视频数量为[" + jobMap.size() + "]");
+        logService.recordLog(taskDo, "符合匹配集数为[" + jobMap.size() + "]");
         jobMap.forEach((k, v) -> {
-            Stratege stratege = registry.getRequiredPluginFor(v);
+            Stratege stratege = null;
+            try {
+                stratege = registry.getRequiredPluginFor(v);
+            }catch (Exception ignore){}
+            if (stratege == null) {
+                mark.set(false);
+                logService.recordLog(taskDo, "暂时未兼容此平台[" + PlatUtil.basePlat(v) + "]");
+                return;
+            }
             Map<Long, List<DanMu>> res = stratege.getDanMu(v);
             Collection<String> danMuColl = calcDanMu(res);
             List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS);
@@ -163,6 +181,7 @@ public class ExecuteService extends BaseService {
             String msg = "加载弹幕[" + danMuColl.size() + "]条,文件[" + assPath + "]".replaceAll(" ", "");
             logService.recordLog(taskDo, msg);
         });
+        return mark.get();
     }
 
     private Map<Integer, String> doubanFileMap(TaskDo taskDo) {
@@ -212,12 +231,12 @@ public class ExecuteService extends BaseService {
                         }
                     }
                 }
-                logService.recordLog(taskDo, "已配置DelMark[" + delMark + "],已删除旧的Ass文件个数[" + num + "]");
+                logService.recordLog(taskDo, "已配置删标[" + delMark + "],已删带此标的ass字幕个数[" + num + "]");
             } else {
-                logService.recordLog(taskDo, "未配置DelMark,将不会删除旧的Ass文件");
+                logService.recordLog(taskDo, "未配置删标,将不会删除任何ass字幕");
             }
         } catch (Exception e) {
-            logService.recordLog(taskDo, "删除旧的ass文件时异常: " + e.getMessage());
+            logService.recordLog(taskDo, "删除旧的ass字幕时异常: " + e.getMessage());
             throw e;
         }
     }
