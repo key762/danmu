@@ -25,7 +25,7 @@ public class ASS {
                 "Active Line: 2\n");
         PUBLIC_ASS.add("[V4+ Styles]\n" +
                 "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n" +
-                "Style: Default-Box,Arial,58,&H00FFFFFF,&H00FFFFFF,&HC4000000,&HFF4E4E5E,0,0,0,0,100,100,0,0,1,15,0,2,135,135,55,1\n");
+                "Style: Default-Box,Arial,58,&H00FFFFFF,&H00FFFFFF,&HC4000000,&HFF4E4E5E,0,0,0,0,100,100,0,0,1,2,0,2,135,135,55,1\n");
         PUBLIC_ASS.add("[Events]\n" +
                 "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text");
     }
