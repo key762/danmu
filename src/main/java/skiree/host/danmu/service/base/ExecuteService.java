@@ -162,24 +162,30 @@ public class ExecuteService extends BaseService {
             Stratege stratege = null;
             try {
                 stratege = registry.getRequiredPluginFor(v);
-            }catch (Exception ignore){}
+            } catch (Exception ignore) {
+            }
             if (stratege == null) {
                 mark.set(false);
                 logService.recordLog(taskDo, "暂时未兼容此平台[" + PlatUtil.basePlat(v) + "]");
                 return;
             }
             Map<Long, List<DanMu>> res = stratege.getDanMu(v);
-            Collection<String> danMuColl = calcDanMu(res);
-            List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS);
-            temp.addAll(danMuColl);
-            String assPath = assFilePath(taskDo, idName, k);
-            String filePath = taskDo.routine.path + "/" + assPath + ".ass";
-            if (FileUtil.exist(filePath)) {
-                FileUtil.del(filePath);
+            if (!res.isEmpty()) {
+                Collection<String> danMuColl = calcDanMu(res);
+                List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS);
+                temp.addAll(danMuColl);
+                String assPath = assFilePath(taskDo, idName, k);
+                String filePath = taskDo.routine.path + "/" + assPath + ".ass";
+                if (FileUtil.exist(filePath)) {
+                    FileUtil.del(filePath);
+                }
+                FileUtil.writeLines(temp, filePath, "UTF-8");
+                String msg = "加载弹幕[" + danMuColl.size() + "]条,文件[" + assPath + "]".replaceAll(" ", "");
+                logService.recordLog(taskDo, msg);
+            } else {
+                String msg = "加载弹幕失败,视频[" + idName.get(k) + "]-(" + v + ")".replaceAll(" ", "");
+                logService.recordLog(taskDo, msg);
             }
-            FileUtil.writeLines(temp, filePath, "UTF-8");
-            String msg = "加载弹幕[" + danMuColl.size() + "]条,文件[" + assPath + "]".replaceAll(" ", "");
-            logService.recordLog(taskDo, msg);
         });
         return mark.get();
     }
@@ -192,7 +198,7 @@ public class ExecuteService extends BaseService {
         while (matcher.find()) {
             JSONObject link = JSONUtil.parseObj(matcher.group());
             Integer ep = Integer.parseInt(link.getStr("ep"));
-            String playLink = link.getStr("play_link").toLowerCase();
+            String playLink = link.getStr("play_link");
             playLink = URLDecoder.decode(playLink, CharsetUtil.CHARSET_UTF_8);
             playLink = playLink.replace("https://www.douban.com/link2/?url=", "");
             playLink = playLink.split(".html")[0] + ".html";
