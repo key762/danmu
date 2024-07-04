@@ -1,5 +1,6 @@
 package skiree.host.danmu.service.core.vyouku;
 
+import cn.hutool.core.img.ColorUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.http.HttpUtil;
@@ -8,6 +9,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.vdurmont.emoji.EmojiParser;
 import okhttp3.*;
+import org.apache.commons.lang3.StringUtils;
 import skiree.host.danmu.model.engine.DanMu;
 
 import java.math.BigDecimal;
@@ -104,18 +106,14 @@ public class vYoukuAssEngine {
                         content = EmojiParser.removeAllEmojis(content);
                         if (!content.isEmpty()) {
                             Long offset = dataDanMu.getLong("playat");
-                            if (offset < 1000L) {
-                                offset = 0L;
-                            } else {
-                                String offStr = dataDanMu.getStr("playat");
-                                Long duoOff = Long.parseLong(offStr.substring(offStr.length() - 3));
-                                if (duoOff > 400L) {
-                                    offset = (offset - duoOff) + 1000;
-                                } else {
-                                    offset = offset - duoOff;
+                            DanMu danMu = new DanMu();
+                            if (dataDanMu.getStr("propertis") != null){
+                                if (dataDanMu.getStr("propertis").contains("color")){
+                                    JSONObject dataDanMuColor = JSONUtil.parseObj(dataDanMu.getStr("propertis"));
+                                    String colorStr = ColorUtil.toHex(ColorUtil.getColor(dataDanMuColor.getInt("color"))).replace("#","");
+                                    danMu.setStyle("{\\c&H" + StringUtils.reverse(colorStr) + "}");
                                 }
                             }
-                            DanMu danMu = new DanMu();
                             danMu.setOffset(offset);
                             danMu.setScore(new BigDecimal(0));
                             danMu.setContent(content);

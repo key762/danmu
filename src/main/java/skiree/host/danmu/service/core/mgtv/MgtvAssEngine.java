@@ -44,20 +44,13 @@ public class MgtvAssEngine {
             content = EmojiParser.removeAllEmojis(content);
             if (!content.isEmpty()) {
                 Long offset = data.getLong("time");
-                if (offset < 1000L) {
-                    offset = 0L;
-                } else {
-                    String offStr = data.getStr("time");
-                    Long duoOff = Long.parseLong(offStr.substring(offStr.length() - 3));
-                    if (duoOff > 400L) {
-                        offset = (offset - duoOff) + 1000;
-                    } else {
-                        offset = offset - duoOff;
-                    }
-                }
                 DanMu danMu = new DanMu();
                 danMu.setOffset(offset);
-                danMu.setScore(new BigDecimal(0));
+                if (data.getLong("up") != null){
+                    danMu.setScore(new BigDecimal(data.getLong("up")));
+                }else {
+                    danMu.setScore(new BigDecimal(0));
+                }
                 danMu.setContent(content);
                 if (res.containsKey(offset)) {
                     res.get(offset).add(danMu);

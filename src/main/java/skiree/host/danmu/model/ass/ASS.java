@@ -2,8 +2,13 @@ package skiree.host.danmu.model.ass;
 
 import lombok.Data;
 
+import java.awt.font.FontRenderContext;
+import java.awt.font.TextLayout;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.awt.Font;
 
 @Data
 public class ASS {
@@ -25,9 +30,17 @@ public class ASS {
                 "Active Line: 2\n");
         PUBLIC_ASS.add("[V4+ Styles]\n" +
                 "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\n" +
-                "Style: Default-Box,Arial,58,&H00FFFFFF,&H00FFFFFF,&HC4000000,&HFF4E4E5E,0,0,0,0,100,100,0,0,1,2,0,2,135,135,55,1\n");
+                "Style: Default-Box,黑体," + AssConf.size + ",&H00FFFFFF,&H00FFFFFF,&HC4000000,&HFF4E4E5E,0,0,0,0,100,100,0,0,1," + AssConf.border + ",0,2,135,135,55,1\n");
         PUBLIC_ASS.add("[Events]\n" +
                 "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text");
+    }
+
+    public static int calculateWidth(String text) {
+        Font font = new Font("黑体", Font.PLAIN, AssConf.size);
+        FontRenderContext frc = new FontRenderContext(null, true, true);
+        TextLayout layout = new TextLayout(text, font, frc);
+        Rectangle2D bounds = layout.getBounds();
+        return (int) bounds.getWidth();
     }
 
 }

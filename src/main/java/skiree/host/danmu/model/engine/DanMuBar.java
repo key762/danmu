@@ -6,7 +6,7 @@ import lombok.Data;
 public class DanMuBar {
     public String pos;
     public Boolean mark;
-    public double nTime;
+    public int nTime;
 
     public DanMuBar(String pos) {
         this.pos = pos;

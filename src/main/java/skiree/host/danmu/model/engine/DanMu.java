@@ -5,13 +5,15 @@ import cn.hutool.json.JSONUtil;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import skiree.host.danmu.model.ass.ASS;
 import skiree.host.danmu.model.ass.AssConf;
+import skiree.host.danmu.service.base.BaseService;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class DanMu {
+public class DanMu extends BaseService {
 
     private Long offset;
     private Long end;
@@ -19,9 +21,10 @@ public class DanMu {
     private String content;
     private String style;
     private BigDecimal score;
+    private int width;
 
     public String getStyle() {
-        if (this.style !=null && !this.style.isEmpty()) {
+        if (this.style != null && !this.style.isEmpty()) {
             if (this.style.contains("gradient_colors")) {
                 JSONArray jsonArray = JSONUtil.parseArray(JSONUtil.parse(this.style).getByPath("gradient_colors").toString());
                 long endTime = (long) (1920.0 * AssConf.speed);
@@ -42,26 +45,40 @@ public class DanMu {
     }
 
     public String getDanMuTime() {
-        if (this.offset < 6000L) {
-            return getDanMuTime(0L);
-        }
-        return getDanMuTime(-6000L);
+        return getDanMuTime(0L);
     }
 
-    public double gkTime() {
-        return (this.content.length() + 3) * 0.5625d;
+    public String getDanMuTimeEnd() {
+//        1920 / 6000 = 0.32
+        int allWidth = this.width + 1920;
+        double allTime = (allWidth / 0.32);
+        return getDanMuTime(Math.round(allTime));
     }
 
-    public String getEndDanMuTime() {
-        return getDanMuTime(24000L);
+    public int gkTime() {
+        double WIDTH_MULTIPLIER = 3.125;
+        this.width = ASS.calculateWidth(this.content+"  ") + (AssConf.border * 2);
+        double time = this.width * WIDTH_MULTIPLIER;
+        return (int) Math.round(time);
+    }
+
+    public String getStart() {
+        int widthStart = (int) Math.round(this.width / 2.0);
+        return String.valueOf(widthStart + 1920);
     }
 
     public String getOutPix() {
-        return "-960";
+        int widthEnd = (int) Math.round(this.width / 2.0);
+        return String.valueOf(-widthEnd);
     }
 
     public String getDanMuTime(Long end) {
         return DurationFormatUtils.formatDuration(this.offset + end, "HH:mm:ss.SS");
     }
 
+    public String getTimeMark() {
+        int allWidth = this.width + 1920;
+        double allTime = (allWidth / 0.32);
+        return String.valueOf(Math.round(allTime));
+    }
 }

@@ -7,6 +7,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.vdurmont.emoji.EmojiParser;
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,18 +51,8 @@ public class BilibiliAssEngine {
                                     double dataStrDou = Double.parseDouble(element.getAttribute("p").split(",")[0]);
                                     Integer dataStrInt = Integer.parseInt(String.valueOf((int) (dataStrDou * 1000.0)));
                                     Long offset = Long.parseLong(String.valueOf(dataStrInt));
-                                    if (offset < 1000L) {
-                                        offset = 0L;
-                                    } else {
-                                        String offStr = String.valueOf(offset);
-                                        Long duoOff = Long.parseLong(offStr.substring(offStr.length() - 3));
-                                        if (duoOff > 400L) {
-                                            offset = (offset - duoOff) + 1000;
-                                        } else {
-                                            offset = offset - duoOff;
-                                        }
-                                    }
                                     DanMu danMu = new DanMu();
+                                    danMu.setStyle("{\\c&H" + StringUtils.reverse(element.getAttribute("p").split(",")[6].toUpperCase()) + "}");
                                     danMu.setOffset(offset);
                                     danMu.setScore(new BigDecimal(0));
                                     danMu.setContent(content);
