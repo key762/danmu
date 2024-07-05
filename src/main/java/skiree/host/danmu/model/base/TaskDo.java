@@ -10,6 +10,7 @@ import skiree.host.danmu.model.tmdb.TvPath;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TaskDo {
+    public Resource resource;
     public Execute execute;
     public Routine routine;
     public TvPath tvPath;

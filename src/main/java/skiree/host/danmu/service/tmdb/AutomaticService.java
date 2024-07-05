@@ -14,6 +14,7 @@ import skiree.host.danmu.util.match.PlatUtil;
 
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class AutomaticService extends BaseService {
@@ -39,10 +40,11 @@ public class AutomaticService extends BaseService {
      */
     public void dealRootPath(String path, String resourceId) {
         List<TvPath> tvPathList = progenyFileInfo(new File(path));
-        List<TvPath> tvValidList = tmdbService.matching(tvPathList);
-        List<TvPath> tvDouBan = douBanService.matching(tvValidList);
-        // 处理完成准备新增例程
-        tvDouBan.forEach(tvPath -> {
+        // 收集数据
+//        CompletableFuture<Void> tmdbFuture = CompletableFuture.runAsync(() -> tmdbService.matching(tvPathList));
+//        CompletableFuture<Void> douBanFuture = CompletableFuture.runAsync(() -> douBanService.matching(tvPathList));
+        // 直接新增到例程
+        tvPathList.forEach(tvPath -> {
             for (SeasonPath seasonPath : tvPath.getSeasonPaths()) {
                 Routine routine = new Routine();
                 routine.setName(tvPath.getName() + "S" + String.format("%02d", Integer.valueOf(seasonPath.getName())));
@@ -54,12 +56,35 @@ public class AutomaticService extends BaseService {
                 routine.setPath(seasonPath.getPath());
                 routine.setStart(nowTime());
                 routine.setDelmark("");
+                routine.setId(routineService.uniqueId());
                 ResultData resultData = routineService.checkData(routine);
                 if (resultData.status == 200) {
                     routineMapper.insert(routine);
                 }
             }
         });
+//        CompletableFuture.allOf(tmdbFuture, douBanFuture).thenRun(
+//                () -> {
+//                    tvPathList.forEach(tvPath -> {
+//                        for (SeasonPath seasonPath : tvPath.getSeasonPaths()) {
+//                            Routine routine = new Routine();
+//                            routine.setName(tvPath.getName() + "S" + String.format("%02d", Integer.valueOf(seasonPath.getName())));
+//                            routine.setRename(platName(seasonPath));
+//                            routine.setTmdbId(tvPath.getTmdbId());
+//                            routine.setDoubanId(seasonPath.getDoubanId());
+//                            routine.setSeason(seasonPath.getName());
+//                            routine.setResource(resourceId);
+//                            routine.setPath(seasonPath.getPath());
+//                            routine.setStart(nowTime());
+//                            routine.setDelmark("");
+//                            ResultData resultData = routineService.checkData(routine);
+//                            if (resultData.status == 200) {
+//                                routineMapper.insert(routine);
+//                            }
+//                        }
+//                    });
+//                }
+//        );
     }
 
     private String platName(SeasonPath seasonPath) {
@@ -146,7 +171,7 @@ public class AutomaticService extends BaseService {
      * @param tvName 剧集名称
      * @return String
      */
-    private String tvHandleName(String tvName) {
+    public String tvHandleName(String tvName) {
         if (!tvName.contains(" ")) {
             return tvName;
         }
@@ -159,6 +184,13 @@ public class AutomaticService extends BaseService {
                 return tvName.replace(" " + yearName, "");
             } catch (Exception ignore) {
             }
+        }
+        return tvName;
+    }
+
+    public String tvHandleName2(String tvName) {
+        if (tvName.contains("S")){
+            return tvName.split("S")[0];
         }
         return tvName;
     }

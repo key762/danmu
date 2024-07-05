@@ -13,6 +13,8 @@ import skiree.host.danmu.model.tmdb.SeasonPath;
 import skiree.host.danmu.model.tmdb.TvPath;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -20,27 +22,30 @@ import java.util.stream.Collectors;
 @Service
 public class DouBanService {
 
-    public List<TvPath> matching(List<TvPath> tvPathList) {
-        if (tvPathList == null || tvPathList.isEmpty()) return tvPathList;
-        tvPathList.parallelStream().forEach(this::buildPlayInfo);
-        tvPathList.forEach(x -> {
-            List<SeasonPath> paths = x.getSeasonPaths().stream()
-                    .filter(seasonPath -> !seasonPath.getDouBanLinkMap().isEmpty())
-                    .collect(Collectors.toList());
-            x.setSeasonPaths(paths);
-        });
-        return tvPathList;
+    private static final int THREAD_POOL_SIZE = 16;
+
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
+    public void matching(List<TvPath> tvPathList) {
+        if (tvPathList == null || tvPathList.isEmpty()) return;
+        for (TvPath tvPath : tvPathList) {
+            executorService.execute(() -> {
+                buildPlayInfo(tvPath);
+            });
+        }
+        // 关闭线程池
+        executorService.shutdown();
     }
 
     /**
      * 补充豆瓣信息
+     *
      * @param tvPath 剧集信息对象
      */
-    private void buildPlayInfo(TvPath tvPath) {
+    public void buildPlayInfo(TvPath tvPath) {
         if (tvPath.getSeasonPaths() == null || tvPath.getSeasonPaths().isEmpty()) return;
         for (SeasonPath seasonPath : tvPath.getSeasonPaths()) {
-            Map<Integer, String> douBanLink = douBanLink(seasonPath, tvPath.getName(), seasonPath.getName());
-            seasonPath.getDouBanLinkMap().putAll(douBanLink);
+            douBanLink(seasonPath, tvPath.getName(), seasonPath.getName());
         }
     }
 
@@ -48,13 +53,12 @@ public class DouBanService {
      * 获取豆瓣剧集列表等信息
      *
      * @param seasonPath 剧集季信息对象
-     * @param name  剧集名称
-     * @param tvNum 剧集季数
+     * @param name       剧集名称
+     * @param tvNum      剧集季数
      * @return 集/播放地址 Map
      */
-    private Map<Integer, String> douBanLink(SeasonPath seasonPath, String name, String tvNum) {
+    public void douBanLink(SeasonPath seasonPath, String name, String tvNum) {
         JSONObject data = null;
-        Map<Integer, String> douBanMap = new HashMap<>();
         if (!name.equalsIgnoreCase(tvNum)) {
             Matcher matcher = Pattern.compile("([0-9]+)").matcher(tvNum);
             if (matcher.find()) {
@@ -69,19 +73,7 @@ public class DouBanService {
             if (mDouBanId.find()) {
                 seasonPath.setDoubanId(mDouBanId.group(1));
             }
-            String result = HttpUtil.get(url, CharsetUtil.CHARSET_UTF_8);
-            Matcher matcher = Pattern.compile("\\{play_link(.*?)}").matcher(result);
-            while (matcher.find()) {
-                JSONObject link = JSONUtil.parseObj(matcher.group());
-                Integer ep = Integer.parseInt(link.getStr("ep"));
-                String playLink = link.getStr("play_link").toLowerCase();
-                playLink = URLDecoder.decode(playLink, CharsetUtil.CHARSET_UTF_8);
-                playLink = playLink.replace("https://www.douban.com/link2/?url=", "");
-                playLink = playLink.split(".html")[0] + ".html";
-                douBanMap.put(ep, playLink);
-            }
         }
-        return douBanMap;
     }
 
     /**

@@ -21,9 +21,12 @@ import skiree.host.danmu.dao.RoutineMapper;
 import skiree.host.danmu.model.ass.ASS;
 import skiree.host.danmu.model.base.*;
 import skiree.host.danmu.model.engine.DanMu;
+import skiree.host.danmu.model.task.Task;
 import skiree.host.danmu.model.tmdb.SeasonPath;
 import skiree.host.danmu.model.tmdb.TvPath;
 import skiree.host.danmu.service.core.Stratege;
+import skiree.host.danmu.service.tmdb.AutomaticService;
+import skiree.host.danmu.service.tmdb.DouBanService;
 import skiree.host.danmu.service.tmdb.TMDBService;
 import skiree.host.danmu.util.match.PlatUtil;
 import skiree.host.danmu.util.substitutor.CustomSubstitutor;
@@ -58,6 +61,8 @@ public class ExecuteService extends BaseService {
 
     @Autowired
     private PluginRegistry<Stratege, String> registry;
+    @Autowired
+    private Task task;
 
     public ResultData deleteData(String id) {
         QueryWrapper<Log> queryLogWrapper = new QueryWrapper<>();
@@ -169,6 +174,10 @@ public class ExecuteService extends BaseService {
                 logService.recordLog(taskDo, "暂时未兼容此平台[" + PlatUtil.basePlat(v) + "]");
                 return;
             }
+            // 先更新重名标志
+            taskDo.routine.rename = PlatUtil.ckPlat(v, "弹幕");
+            routineMapper.updateById(taskDo.routine);
+            // 获取数据
             Map<Long, List<DanMu>> res = stratege.getDanMu(v);
             if (!res.isEmpty()) {
                 Collection<String> danMuColl = calcDanMu(res);
@@ -234,6 +243,9 @@ public class ExecuteService extends BaseService {
                         if (FileUtil.mainName(file).contains(delMark)) {
                             FileUtil.del(file);
                             num += 1;
+                        }else if (taskDo.resource != null && taskDo.resource.getName().endsWith("Daa")){
+                            FileUtil.del(file);
+                            num += 1;
                         }
                     }
                 }
@@ -247,6 +259,12 @@ public class ExecuteService extends BaseService {
         }
     }
 
+    @Autowired
+    private AutomaticService automaticService;
+
+    @Autowired
+    private DouBanService douBanService;
+
     private TaskDo buildTaskDo(Execute execute) {
         TaskDo taskDo = new TaskDo();
         taskDo.setExecute(execute);
@@ -255,17 +273,35 @@ public class ExecuteService extends BaseService {
         Resource resource = resourceMapper.selectById(routine.getResource());
         // 剧集
         TvPath tvPath = new TvPath();
-        tvPath.setName(routine.getName());
+        tvPath.setName(automaticService.tvHandleName2(routine.getName()));
         tvPath.setProtoName(routine.getName());
-        tvPath.setPath(resource.getPath());
-        tvPath.setTmdbId(routine.getTmdbId());
+        // tmId处理
+        if (routine.getTmdbId() == null){
+            tmdbService.buildTvId(tvPath);
+            if (tvPath.getTmdbId() != null){
+                routine.setTmdbId(tvPath.getTmdbId());
+                routineMapper.updateById(routine);
+            }
+        }else {
+            tvPath.setTmdbId(routine.getTmdbId());
+        }
         // 季
         SeasonPath seasonPath = new SeasonPath();
         seasonPath.setName(routine.getSeason());
         seasonPath.setProtoName(routine.getSeason());
         seasonPath.setPath(routine.getPath());
-        seasonPath.setDoubanId(routine.getDoubanId());
+        // douBanId处理
+        if (routine.getDoubanId() == null){
+            douBanService.douBanLink(seasonPath, tvPath.getName(), routine.getSeason());
+            if (tvPath.getTmdbId() != null){
+                routine.setDoubanId(seasonPath.getDoubanId());
+                routineMapper.updateById(routine);
+            }
+        }else {
+            seasonPath.setDoubanId(routine.getDoubanId());
+        }
         // 设置
+        taskDo.setResource(resource);
         taskDo.setSeasonPath(seasonPath);
         taskDo.setTvPath(tvPath);
         // 补充Routine

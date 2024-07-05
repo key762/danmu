@@ -114,7 +114,7 @@ public class RoutineService extends BaseService {
         return new ResultData(200, "OK", pageData);
     }
 
-    private String uniqueId() {
+    public String uniqueId() {
         String uuid = Routine.randomId();
         while (routineMapper.selectById(uuid) != null) {
             uuid = Resource.randomId();

@@ -14,6 +14,8 @@ import skiree.host.danmu.model.tmdb.TvPath;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,23 +23,34 @@ public class TMDBService {
 
     final static String API_KEY = "a89b8e8ac71914ae998fbcf80bdb1232";
 
-    public List<TvPath> matching(List<TvPath> tvPathList) {
-        if (tvPathList == null || tvPathList.isEmpty()) return tvPathList;
+    private static final int THREAD_POOL_SIZE = 16;
+
+    private static final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
+
+    public void matching(List<TvPath> tvPathList) {
+        if (tvPathList == null || tvPathList.isEmpty()) return;
         tvPathList.parallelStream().forEach(this::buildTvId);
+        for (TvPath tvPath : tvPathList) {
+            executorService.execute(() -> {
+                buildTvId(tvPath);
+            });
+        }
+        // 关闭线程池
+        executorService.shutdown();
         tvPathList = tvPathList.stream()
                 .filter(tvPath -> StrUtil.isNotEmpty(tvPath.getTmdbId()))
                 .collect(Collectors.toList());
-        tvPathList.parallelStream().forEach(this::buildSeason);
-        tvPathList.forEach(x -> {
-            List<SeasonPath> paths = x.getSeasonPaths().stream()
-                    .filter(seasonPath -> !seasonPath.getEpisodesMap().isEmpty())
-                    .collect(Collectors.toList());
-            x.setSeasonPaths(paths);
-        });
-        tvPathList = tvPathList.stream()
-                .filter(tvPath -> !tvPath.getSeasonPaths().isEmpty())
-                .collect(Collectors.toList());
-        return tvPathList;
+//        tvPathList.parallelStream().forEach(this::buildSeason);
+//        tvPathList.forEach(x -> {
+//            List<SeasonPath> paths = x.getSeasonPaths().stream()
+//                    .filter(seasonPath -> !seasonPath.getEpisodesMap().isEmpty())
+//                    .collect(Collectors.toList());
+//            x.setSeasonPaths(paths);
+//        });
+//        tvPathList = tvPathList.stream()
+//                .filter(tvPath -> !tvPath.getSeasonPaths().isEmpty())
+//                .collect(Collectors.toList());
+//        return tvPathList;
     }
 
     private void buildSeason(TvPath tvPath) {
@@ -105,7 +118,7 @@ public class TMDBService {
      *
      * @param tvPath 剧集对象
      */
-    private void buildTvId(TvPath tvPath) {
+    public void buildTvId(TvPath tvPath) {
         String url = "https://api.themoviedb.org/3/search/tv?query=" + tvPath.getName() + "&page=1&language=zh&include_adult=false&api_key=" + API_KEY;
         String result = HttpUtil.get(url, CharsetUtil.CHARSET_UTF_8);
         JSONArray jsonArray = JSONUtil.parseObj(result).getJSONArray("results");
