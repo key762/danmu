@@ -115,11 +115,11 @@
             <artifactId>okhttp</artifactId>
             <version>5.0.0-alpha.3</version>
         </dependency>
-        <!-- javahost依赖 -->
+        <!-- dns-cache-manipulator依赖 -->
         <dependency>
-            <groupId>io.leopard</groupId>
-            <artifactId>javahost</artifactId>
-            <version>0.9.12</version>
+            <groupId>com.alibaba</groupId>
+            <artifactId>dns-cache-manipulator</artifactId>
+            <version>1.8.2</version>
         </dependency>
     </dependencies>
 

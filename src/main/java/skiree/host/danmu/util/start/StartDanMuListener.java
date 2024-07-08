@@ -1,11 +1,13 @@
 package skiree.host.danmu.util.start;
 
-import io.leopard.javahost.JavaHost;
+import com.alibaba.dcm.DnsCacheManipulator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import skiree.host.danmu.service.base.ConfigService;
+
+import java.net.InetAddress;
 
 @Component
 public class StartDanMuListener implements ApplicationRunner {
@@ -16,7 +18,7 @@ public class StartDanMuListener implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         configService.updateConfig();
-        JavaHost.updateVirtualDns("api.themoviedb.org", "13.32.50.105");
-        JavaHost.printAllVirtualDns();
+        DnsCacheManipulator.setDnsCache("api.themoviedb.org", "13.32.50.105");
+        System.out.println(InetAddress.getByName("api.themoviedb.org").getHostAddress());
     }
 }
