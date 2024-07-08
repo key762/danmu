@@ -33,35 +33,98 @@
             top: 10px;
             left: 10px;
         }
+
+        #config {
+            margin-top: 10px;
+            margin-left: 100px;
+            margin-right: 110px;
+            background-color: #79bfbe;
+            padding: 0 10px;
+            height: 200px;
+            border-radius: 20px;
+        }
+
+        .style4 {
+            margin-left: 4%;
+            margin-bottom: 0%;
+            display: inline;
+            font-weight: bolder;
+            color: rgb(138, 227, 214);
+            font-size: 1.5rem;
+        }
+
+        .acc {
+            margin-left: 2%;
+            width: 120px;
+            height: 0.8rem;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            padding: 0.8rem;
+            font-weight: bold;
+            border: none;
+            border-bottom: 2px solid rgb(81, 198, 214);
+            color: #2f4d56;
+            background-color: transparent;
+            outline: none;
+            border-radius: 6px;
+        }
+
+        .button {
+            width: 120px;
+            height: 80%;
+            color: #fff;
+            background: #8AE3D6FF;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+            cursor: pointer;
+            margin-left: 25px;
+        }
     </style>
 </head>
 
 <body>
-<div style="text-align: center;margin-bottom: 30px">
+<div style="text-align: center;margin-bottom: 30px;color: #2f4d56">
     <h1>综合信息展示</h1>
 </div>
 
 <div class="info-container">
     <div class="info-box">
-        <h2 class="info-title" style="color: #2a2a2a">资源数量</h2>
-        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${resourceNum}">1</span></h1>
+        <h2 class="info-title" style="color: #8AE3D6FF">资源数量</h2>
+        <h1 style="font-size: 48px;color: #2f4d56"><span th:text="${resourceNum}">1</span></h1>
     </div>
 
     <div class="info-box">
-        <h2 class="info-title" style="color: #2a2a2a">例程数量</h2>
-        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${routineNum}">2</span></h1>
+        <h2 class="info-title" style="color: #8AE3D6FF">例程数量</h2>
+        <h1 style="font-size: 48px;color: #2f4d56"><span th:text="${routineNum}">2</span></h1>
     </div>
 
     <div class="info-box">
-        <h2 class="info-title" style="color: #2a2a2a">执行次数</h2>
-        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${executeNum}">4</span></h1>
+        <h2 class="info-title" style="color: #8AE3D6FF">执行次数</h2>
+        <h1 style="font-size: 48px;color: #2f4d56"><span th:text="${executeNum}">4</span></h1>
     </div>
 
     <div class="info-box">
-        <h2 class="info-title" style="color: #2a2a2a">成功次数</h2>
-        <h1 style="font-size: 48px;color: #2f4056"><span th:text="${okNum}">3</span></h1>
+        <h2 class="info-title" style="color: #8AE3D6FF">成功次数</h2>
+        <h1 style="font-size: 48px;color: #2f4d56"><span th:text="${okNum}">3</span></h1>
     </div>
 </div>
+
+
+<form id="config" th:action="@{/doConfig}" method="post">
+    <div style="margin-left: 15px;border-top: 15px">
+        <h1 class="style4"> 弹幕行数 </h1> <input class="acc" name="danMuRow" type="text" placeholder="默认(4)"
+                                                  th:value="${danMuRow}">
+        <h1 class="style4"> 弹幕大小 </h1> <input class="acc" name="danMuSize" type="text" placeholder="默认(63)"
+                                                  th:value="${danMuSize}">
+        <h1 class="style4"> 弹幕背景 </h1> <input class="acc" name="danMuBG" type="text" placeholder="默认(2)"
+                                                  th:value="${danMuBG}">
+    </div>
+    <div style="text-align: right;margin-right: 30px;border-top: 30px">
+        <input class="button" type="submit" value="保存">
+    </div>
+</form>
 
 </body>
 

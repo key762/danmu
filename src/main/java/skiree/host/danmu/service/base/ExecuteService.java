@@ -102,9 +102,11 @@ public class ExecuteService extends BaseService {
 
     @Async
     public void executeDo(Execute execute) {
-        TaskDo taskDo = buildTaskDo(execute);
-        logService.recordLog(taskDo, "初始化完成");
+        TaskDo taskDo = new TaskDo();
+        taskDo.setExecute(execute);
         try {
+            taskDo = buildTaskDo(execute);
+            logService.recordLog(taskDo, "初始化完成");
             execute.setStatus("排队中");
             execute.setEnd(nowTime());
             executeMapper.updateById(execute);
@@ -119,7 +121,7 @@ public class ExecuteService extends BaseService {
                 logService.recordLog(taskDo, "执行失败");
             }
         } catch (Exception e) {
-            logService.recordLog(taskDo, "执行失败");
+            logService.recordLog(taskDo, "执行失败,Exception : " + e.getMessage());
             execute.setStatus("已失败");
             execute.setEnd(nowTime());
             executeMapper.updateById(execute);

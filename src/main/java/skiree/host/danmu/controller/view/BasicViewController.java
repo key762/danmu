@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import skiree.host.danmu.service.base.ConfigService;
 import skiree.host.danmu.service.base.ExecuteService;
 
 @Controller
@@ -16,6 +17,9 @@ public class BasicViewController {
 
     @Autowired
     private ExecuteService executeService;
+
+    @Autowired
+    private ConfigService configService;
 
     @Value("${danmu.user}")
     private String user;
@@ -55,6 +59,7 @@ public class BasicViewController {
     @GetMapping("/show.html")
     public String show(Model model) {
         executeService.buildShow(model);
+        configService.buildModel(model);
         return checkLogin("show");
     }
 

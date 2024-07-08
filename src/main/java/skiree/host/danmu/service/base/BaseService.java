@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @Service
 public class BaseService {
 
+    public static Integer row = 4;
+
     public static String nowTime() {
         return DateUtil.format(new Date(), "yyyy-MM-dd HH:mm:ss");
     }
@@ -31,7 +33,7 @@ public class BaseService {
             }
         }
         Map<Long, List<DanMu>> sortedRes = new TreeMap<>(res);
-        DanMuBar[] danMuBars = new DanMuBar[4];
+        DanMuBar[] danMuBars = new DanMuBar[row];
         for (int i = 0; i < danMuBars.length; i++) {
             danMuBars[i] = new DanMuBar("{\\move(START_MARK," + (80 + i * 80) + ",END_MARK," + (80 + i * 80) + ",0,TIME_MARK)\\fs" + AssConf.size + "}");
         }
