@@ -7,8 +7,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 import skiree.host.danmu.service.base.ConfigService;
 
-import java.net.InetAddress;
-
 @Component
 public class StartDanMuListener implements ApplicationRunner {
 
@@ -19,6 +17,5 @@ public class StartDanMuListener implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         configService.updateConfig();
         DnsCacheManipulator.setDnsCache("api.themoviedb.org", "13.32.50.105");
-        System.out.println(InetAddress.getByName("api.themoviedb.org").getHostAddress());
     }
 }
