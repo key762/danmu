@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import skiree.host.danmu.dao.ConfigMapper;
 import skiree.host.danmu.model.ass.AssConf;
 import skiree.host.danmu.model.base.Config;
+import skiree.host.danmu.service.tmdb.TMDBService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,10 @@ public class ConfigService {
 
     public void buildModel(Model model) {
         List<Config> configs = configMapper.selectList(null);
-        model.addAttribute("danMuRow", 4);
-        model.addAttribute("danMuSize", 63);
-        model.addAttribute("danMuBG", 2);
+        model.addAttribute("danMuRow", AssConf.row);
+        model.addAttribute("danMuSize", AssConf.size);
+        model.addAttribute("danMuBG", AssConf.border);
+        model.addAttribute("danMuFormat", AssConf.format);
         if (configs != null && !configs.isEmpty()) {
             configs.forEach(config -> {
                 model.addAttribute(config.key, config.value);
@@ -34,7 +36,7 @@ public class ConfigService {
             configs.forEach(config -> {
                 try {
                     if (config.key.equals("danMuRow")) {
-                        BaseService.row = Integer.parseInt(config.value);
+                        AssConf.row = Integer.parseInt(config.value);
                     }
                     if (config.key.equals("danMuSize")) {
                         AssConf.size = Integer.parseInt(config.value);
@@ -42,13 +44,16 @@ public class ConfigService {
                     if (config.key.equals("danMuBG")) {
                         AssConf.border = Integer.parseInt(config.value);
                     }
+                    if (config.key.equals("danMuFormat")) {
+                        AssConf.format = config.value;
+                    }
                 } catch (Exception ignore) {
                 }
             });
         }
     }
 
-    public void updateConfig(String danMuRow, String danMuSize, String danMuBG) {
+    public void updateConfig(String danMuRow, String danMuSize, String danMuBG, String danMuFormat) {
         List<Config> configs = new ArrayList<>();
         try {
             Integer.parseInt(danMuRow);
@@ -73,6 +78,12 @@ public class ConfigService {
             c.setValue(danMuBG);
             configs.add(c);
         } catch (Exception ignore) {
+        }
+        if (danMuFormat != null && !danMuFormat.isEmpty()) {
+            Config c = new Config();
+            c.setKey("danMuFormat");
+            c.setValue(danMuFormat);
+            configs.add(c);
         }
         // 全删全插
         configMapper.delete(null);

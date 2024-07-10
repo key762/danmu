@@ -6,7 +6,9 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import org.apache.commons.text.StringSubstitutor;
 import org.springframework.stereotype.Service;
+import skiree.host.danmu.model.ass.AssConf;
 import skiree.host.danmu.model.tmdb.Episodes;
 import skiree.host.danmu.model.tmdb.SeasonPath;
 import skiree.host.danmu.model.tmdb.TvPath;
@@ -91,11 +93,17 @@ public class TMDBService {
             String season = data.getStr("season_number");
             Episodes episodes = new Episodes(number, name, season);
             seasonPath.getEpisodesMap().put(number, episodes);
-            String epName = tvName + " - S" +
-                    String.format("%02d", Integer.valueOf(season))
-                    + "E" +
-                    String.format("%02d", number)
-                    + " - " + name;
+
+            Map<String, String> nameKV = new HashMap<>();
+            nameKV.put("showTitle", tvName);
+            nameKV.put("seasonNr", season);
+            nameKV.put("episodeNr", String.valueOf(number));
+            nameKV.put("seasonNr2", String.format("%02d", Integer.valueOf(season)));
+            nameKV.put("episodeNr2", String.format("%02d", number));
+            nameKV.put("title", name);
+
+            String epName = new StringSubstitutor(nameKV).replace(AssConf.format);
+
             seasonMap.put(number, epName);
         }
         return seasonMap;

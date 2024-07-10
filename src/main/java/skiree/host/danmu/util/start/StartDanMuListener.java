@@ -17,5 +17,6 @@ public class StartDanMuListener implements ApplicationRunner {
     public void run(ApplicationArguments args) throws Exception {
         configService.updateConfig();
         DnsCacheManipulator.setDnsCache("api.themoviedb.org", "13.32.50.105");
+        System.setProperty("https.protocols", "TLSv1,TLSv1.1,TLSv1.2");
     }
 }
