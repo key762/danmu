@@ -65,6 +65,8 @@ public class ResourceService extends BaseService {
         // 新增资源
         Resource resource = new Resource(uniqueId(), name, path, nowTime());
         resourceMapper.insert(resource);
+        // 新增结束直接解析
+        analysisData(resource.getId());
         return new ResultData(200, "OK");
     }
 
