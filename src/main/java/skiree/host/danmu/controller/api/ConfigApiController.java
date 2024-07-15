@@ -14,8 +14,8 @@ public class ConfigApiController {
     private ConfigService configService;
 
     @PostMapping("/doConfig")
-    public String doConfig(String danMuRow, String danMuSize, String danMuBG, String danMuFormat) {
-        configService.updateConfig(danMuRow, danMuSize, danMuBG, danMuFormat);
+    public String doConfig(String danMuRow, String danMuSize, String danMuBG, String danMuFormat, String danMuSpeed) {
+        configService.updateConfig(danMuRow, danMuSize, danMuBG, danMuFormat, danMuSpeed);
         configService.updateConfig();
         return "redirect:/show.html";
     }

@@ -50,14 +50,15 @@ public class DanMu extends BaseService {
 
     public String getDanMuTimeEnd() {
 //        1920 / 6000 = 0.32
+        double WIDTH_TIME = (double) 1920 / (AssConf.speed * 1000);
         int allWidth = this.width + 1920;
-        double allTime = (allWidth / 0.32);
+        double allTime = (allWidth / WIDTH_TIME);
         return getDanMuTime(Math.round(allTime));
     }
 
     public int gkTime() {
-        double WIDTH_MULTIPLIER = 3.125;
-        this.width = ASS.calculateWidth(this.content+"  ") + (AssConf.border * 2);
+        double WIDTH_MULTIPLIER = (double) (AssConf.speed * 1000) / 1920;
+        this.width = ASS.calculateWidth(this.content + "  ") + (AssConf.border * 2);
         double time = this.width * WIDTH_MULTIPLIER;
         return (int) Math.round(time);
     }
@@ -77,8 +78,9 @@ public class DanMu extends BaseService {
     }
 
     public String getTimeMark() {
+        double WIDTH_TIME = (double) 1920 / (AssConf.speed * 1000);
         int allWidth = this.width + 1920;
-        double allTime = (allWidth / 0.32);
+        double allTime = (allWidth / WIDTH_TIME);
         return String.valueOf(Math.round(allTime));
     }
 }

@@ -47,13 +47,16 @@ public class ConfigService {
                     if (config.key.equals("danMuFormat")) {
                         AssConf.format = config.value;
                     }
+                    if (config.key.equals("danMuSpeed")) {
+                        AssConf.speed = Integer.parseInt(config.value);
+                    }
                 } catch (Exception ignore) {
                 }
             });
         }
     }
 
-    public void updateConfig(String danMuRow, String danMuSize, String danMuBG, String danMuFormat) {
+    public void updateConfig(String danMuRow, String danMuSize, String danMuBG, String danMuFormat, String danMuSpeed) {
         List<Config> configs = new ArrayList<>();
         try {
             Integer.parseInt(danMuRow);
@@ -84,6 +87,14 @@ public class ConfigService {
             c.setKey("danMuFormat");
             c.setValue(danMuFormat);
             configs.add(c);
+        }
+        try {
+            Integer.parseInt(danMuSpeed);
+            Config c = new Config();
+            c.setKey("danMuSpeed");
+            c.setValue(danMuSpeed);
+            configs.add(c);
+        } catch (Exception ignore) {
         }
         // 全删全插
         configMapper.delete(null);
