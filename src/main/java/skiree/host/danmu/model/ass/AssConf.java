@@ -13,7 +13,7 @@ public class AssConf {
 
     public static Integer size = 63;
 
-    public static Integer border = 2;
+    public static Integer border = 0;
 
     public static String format = "${showTitle} - S${seasonNr2}E${episodeNr2} - ${title}";
 }

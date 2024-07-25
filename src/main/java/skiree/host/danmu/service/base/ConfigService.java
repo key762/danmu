@@ -19,15 +19,16 @@ public class ConfigService {
 
     public void buildModel(Model model) {
         List<Config> configs = configMapper.selectList(null);
-        model.addAttribute("danMuRow", AssConf.row);
-        model.addAttribute("danMuSize", AssConf.size);
-        model.addAttribute("danMuBG", AssConf.border);
-        model.addAttribute("danMuFormat", AssConf.format);
         if (configs != null && !configs.isEmpty()) {
             configs.forEach(config -> {
                 model.addAttribute(config.key, config.value);
             });
         }
+        updateConfig();
+        model.addAttribute("danMuRow", AssConf.row);
+        model.addAttribute("danMuSize", AssConf.size);
+        model.addAttribute("danMuBG", AssConf.border);
+        model.addAttribute("danMuFormat", AssConf.format);
     }
 
     public void updateConfig() {

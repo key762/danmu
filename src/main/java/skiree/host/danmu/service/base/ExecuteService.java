@@ -4,11 +4,13 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.net.URLDecoder;
 import cn.hutool.core.util.CharsetUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.plugin.core.PluginRegistry;
 import org.springframework.scheduling.annotation.Async;
@@ -19,6 +21,7 @@ import skiree.host.danmu.dao.LogMapper;
 import skiree.host.danmu.dao.ResourceMapper;
 import skiree.host.danmu.dao.RoutineMapper;
 import skiree.host.danmu.model.ass.ASS;
+import skiree.host.danmu.model.ass.VideoInfo;
 import skiree.host.danmu.model.base.*;
 import skiree.host.danmu.model.engine.DanMu;
 import skiree.host.danmu.model.task.Task;
@@ -165,7 +168,19 @@ public class ExecuteService extends BaseService {
             return mark.get();
         }
         logService.recordLog(taskDo, "符合匹配集数为[" + jobMap.size() + "]");
-        jobMap.forEach((k, v) -> {
+        // 要考虑本地文件
+        Map<Integer, VideoInfo> localFile = localFileMap(taskDo);
+        // 计算本地视频和弹幕平台视频的交集
+        Map<Integer, String> coreMap = jobMap.entrySet().stream()
+                .filter(entry -> localFile.containsKey(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (coreMap.isEmpty()) {
+            mark.set(false);
+            logService.recordLog(taskDo, "本地符合匹配集数为[0],执行结束");
+            return mark.get();
+        }
+        logService.recordLog(taskDo, "本地符合匹配集数为[" + coreMap.size() + "]");
+        coreMap.forEach((k, v) -> {
             Stratege stratege = null;
             try {
                 stratege = registry.getRequiredPluginFor(v);
@@ -182,8 +197,12 @@ public class ExecuteService extends BaseService {
             // 获取数据
             Map<Long, List<DanMu>> res = stratege.getDanMu(v);
             if (!res.isEmpty()) {
-                Collection<String> danMuColl = calcDanMu(res);
-                List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS);
+                VideoInfo videoInfo = localFile.get(k);
+                Collection<String> danMuColl = calcDanMu(res, videoInfo);
+                List<String> temp = new ArrayList<>(ASS.PUBLIC_ASS1);
+                temp.add("PlayResX: "+videoInfo.getWidth());
+                temp.add("PlayResY: "+videoInfo.getHeight());
+                temp.addAll(ASS.PUBLIC_ASS2);
                 temp.addAll(danMuColl);
                 String assPath = assFilePath(taskDo, idName, k);
                 String filePath = taskDo.routine.path + "/" + assPath + ".ass";
@@ -199,6 +218,31 @@ public class ExecuteService extends BaseService {
             }
         });
         return mark.get();
+    }
+
+    private Map<Integer, VideoInfo> localFileMap(TaskDo taskDo) {
+        Map<Integer, VideoInfo> idName = new HashMap<>();
+        try {
+            Pattern pattern = Pattern.compile("E(\\d+)");
+            for (File file : FileUtil.ls(taskDo.routine.path)) {
+                String extName = FileUtil.extName(file);
+                if (StrUtil.containsAnyIgnoreCase(extName, "mkv", "mp4")) {
+                    String mainName = FileUtil.mainName(file);
+                    Matcher matcher = pattern.matcher(mainName);
+                    if (matcher.find()) {
+                        Integer episodeNumber = Integer.parseInt(matcher.group(1));
+                        VideoInfo videoInfo = getVideoInfo(file);
+                        if ( videoInfo != null ) {
+                            idName.put(episodeNumber, videoInfo);
+                        }
+                    }
+                }
+            }
+            return idName;
+        } catch (Exception e) {
+            logService.recordLog(taskDo, "统计本地视频文件时异常: " + e.getMessage());
+            throw e;
+        }
     }
 
     private Map<Integer, String> doubanFileMap(TaskDo taskDo) {
@@ -238,20 +282,24 @@ public class ExecuteService extends BaseService {
         try {
             String delMark = taskDo.routine.delmark;
             String fullPath = taskDo.routine.path;
-            if (delMark != null && !delMark.isEmpty()) {
+            if ((delMark != null && !delMark.isEmpty()) || taskDo.resource.getName().endsWith("Daa")) {
                 int num = 0;
                 for (File file : FileUtil.ls(fullPath)) {
                     if (FileUtil.extName(file).equals("ass")) {
                         if (FileUtil.mainName(file).contains(delMark)) {
                             FileUtil.del(file);
                             num += 1;
-                        }else if (taskDo.resource != null && taskDo.resource.getName().endsWith("Daa")){
+                        } else if (taskDo.resource != null && taskDo.resource.getName().endsWith("Daa")) {
                             FileUtil.del(file);
                             num += 1;
                         }
                     }
                 }
-                logService.recordLog(taskDo, "已配置删标[" + delMark + "],已删带此标的ass字幕个数[" + num + "]");
+                if (!taskDo.resource.getName().endsWith("Daa") && delMark != null && !delMark.isEmpty()) {
+                    logService.recordLog(taskDo, "已配置删标[" + delMark + "],已删带此标的ass字幕个数[" + num + "]");
+                } else {
+                    logService.recordLog(taskDo, "未配置删标但资源后缀为Daa,将删除所有的ass字幕个数[" + num + "]");
+                }
             } else {
                 logService.recordLog(taskDo, "未配置删标,将不会删除任何ass字幕");
             }
@@ -278,13 +326,13 @@ public class ExecuteService extends BaseService {
         tvPath.setName(automaticService.tvHandleName2(routine.getName()));
         tvPath.setProtoName(routine.getName());
         // tmId处理
-        if (routine.getTmdbId() == null){
+        if (routine.getTmdbId() == null) {
             tmdbService.buildTvId(tvPath);
-            if (tvPath.getTmdbId() != null){
+            if (tvPath.getTmdbId() != null) {
                 routine.setTmdbId(tvPath.getTmdbId());
                 routineMapper.updateById(routine);
             }
-        }else {
+        } else {
             tvPath.setTmdbId(routine.getTmdbId());
         }
         // 季
@@ -293,13 +341,13 @@ public class ExecuteService extends BaseService {
         seasonPath.setProtoName(routine.getSeason());
         seasonPath.setPath(routine.getPath());
         // douBanId处理
-        if (routine.getDoubanId() == null){
+        if (routine.getDoubanId() == null) {
             douBanService.douBanLink(seasonPath, tvPath.getName(), routine.getSeason());
-            if (tvPath.getTmdbId() != null){
+            if (tvPath.getTmdbId() != null) {
                 routine.setDoubanId(seasonPath.getDoubanId());
                 routineMapper.updateById(routine);
             }
-        }else {
+        } else {
             seasonPath.setDoubanId(routine.getDoubanId());
         }
         // 设置
@@ -331,4 +379,26 @@ public class ExecuteService extends BaseService {
         model.addAttribute("executeNum", executeMapper.selectCount(null));
         model.addAttribute("okNum", executeMapper.selectCount(new QueryWrapper<Execute>().eq("status", "已成功")));
     }
+
+    public static VideoInfo getVideoInfo(File file) {
+        VideoInfo videoInfo = new VideoInfo();
+        FFmpegFrameGrabber grabber = null;
+        try {
+            grabber = new FFmpegFrameGrabber(file);
+            grabber.start();
+            videoInfo.setWidth(grabber.getImageWidth());
+            videoInfo.setHeight(grabber.getImageHeight());
+            return videoInfo;
+        } catch (Exception e) {
+            return null;
+        } finally {
+            try {
+                if (grabber != null) {
+                    grabber.stop();
+                    grabber.release();
+                }
+            } catch (FFmpegFrameGrabber.Exception ignore) {}
+        }
+    }
+
 }

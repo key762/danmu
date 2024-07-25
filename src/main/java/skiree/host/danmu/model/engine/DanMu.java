@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import skiree.host.danmu.model.ass.ASS;
 import skiree.host.danmu.model.ass.AssConf;
+import skiree.host.danmu.model.ass.VideoInfo;
 import skiree.host.danmu.service.base.BaseService;
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ public class DanMu extends BaseService {
     private String content;
     private String style;
     private BigDecimal score;
-    private int width;
+    private double width;
 
     public String getStyle() {
         if (this.style != null && !this.style.isEmpty()) {
@@ -48,28 +49,28 @@ public class DanMu extends BaseService {
         return getDanMuTime(0L);
     }
 
-    public String getDanMuTimeEnd() {
+    public String getDanMuTimeEnd(VideoInfo videoInfo) {
 //        1920 / 6000 = 0.32
-        double WIDTH_TIME = (double) 1920 / (AssConf.speed * 1000);
-        int allWidth = this.width + 1920;
+        double WIDTH_TIME = (double) videoInfo.getWidth() / (AssConf.speed * 1000);
+        double allWidth = this.width + videoInfo.getWidth();
         double allTime = (allWidth / WIDTH_TIME);
         return getDanMuTime(Math.round(allTime));
     }
 
-    public int gkTime() {
-        double WIDTH_MULTIPLIER = (double) (AssConf.speed * 1000) / 1920;
-        this.width = ASS.calculateWidth(this.content + "  ") + (AssConf.border * 2);
+    public int gkTime(VideoInfo videoInfo) {
+        double WIDTH_MULTIPLIER = (double) (AssConf.speed * 1000) / videoInfo.getWidth();
         double time = this.width * WIDTH_MULTIPLIER;
         return (int) Math.round(time);
     }
 
-    public String getStart() {
-        int widthStart = (int) Math.round(this.width / 2.0);
-        return String.valueOf(widthStart + 1920);
+    public String getStart(VideoInfo videoInfo) {
+//        int widthStart = (int) Math.round(this.width / 2.0);
+//        return String.valueOf(widthStart + videoInfo.getWidth());
+        return String.valueOf(videoInfo.getWidth());
     }
 
     public String getOutPix() {
-        int widthEnd = (int) Math.round(this.width / 2.0);
+        int widthEnd = (int) Math.round(this.width);
         return String.valueOf(-widthEnd);
     }
 
@@ -77,9 +78,9 @@ public class DanMu extends BaseService {
         return DurationFormatUtils.formatDuration(this.offset + end, "HH:mm:ss.SS");
     }
 
-    public String getTimeMark() {
-        double WIDTH_TIME = (double) 1920 / (AssConf.speed * 1000);
-        int allWidth = this.width + 1920;
+    public String getTimeMark(VideoInfo videoInfo) {
+        double WIDTH_TIME = (double) videoInfo.getWidth() / (AssConf.speed * 1000);
+        double allWidth = this.width + videoInfo.getWidth();
         double allTime = (allWidth / WIDTH_TIME);
         return String.valueOf(Math.round(allTime));
     }
